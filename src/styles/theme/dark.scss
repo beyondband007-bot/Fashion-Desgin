@@ -1,0 +1,45 @@
+[data-theme='dark'] {
+  --bg-primary: #090b14;
+  --bg-secondary: #111827;
+  --bg-tertiary: #151a2e;
+
+  --card-bg: #121826;
+  --card-bg-hover: #182033;
+
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+
+  --primary: #7c5cff;
+  --primary-hover: #8d70ff;
+  --primary-soft: rgba(124, 92, 255, 0.18);
+
+  --success: #3ccf91;
+  --warning: #ffb84d;
+  --danger: #ff6b6b;
+
+  --text-primary: #ffffff;
+  --text-secondary: #b5bdd1;
+  --text-tertiary: #7d879d;
+
+  --header-bg: rgba(9, 11, 20, 0.7);
+  --hero-bg:
+    radial-gradient(circle at 70% 20%, rgba(124, 92, 255, 0.25), transparent 40%),
+    linear-gradient(135deg, #090b14, #111827, #151a2e);
+
+  --stat-card-bg: #121826;
+  --stat-card-text: #ffffff;
+  --stat-card-subtext: #b5bdd1;
+
+  --text-inverse: #ffffff;
+
+  --home-brand-bg: #111827;
+
+  // Legacy aliases
+  --brand-color: var(--primary);
+  --brand-color-soft: var(--primary-soft);
+  --success-color: var(--success);
+  --warning-color: var(--warning);
+  --danger-color: var(--danger);
+  --bg-elevated: var(--header-bg);
+  --border-strong: var(--border-hover);
+}

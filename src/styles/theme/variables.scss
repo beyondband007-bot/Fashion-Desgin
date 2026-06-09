@@ -1,0 +1,62 @@
+// Shared design tokens (theme-agnostic)
+:root {
+  --font-family: Inter, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+
+  --font-xs: 12px;
+  --font-sm: 14px;
+  --font-md: 16px;
+  --font-lg: 18px;
+  --font-xl: 20px;
+  --font-2xl: 24px;
+  --font-3xl: 32px;
+  --font-4xl: 40px;
+  --font-5xl: 56px;
+
+  --line-xs: 18px;
+  --line-sm: 22px;
+  --line-md: 24px;
+  --line-lg: 28px;
+  --line-xl: 30px;
+  --line-2xl: 34px;
+  --line-3xl: 42px;
+  --line-4xl: 52px;
+  --line-5xl: 68px;
+
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --header-height: 72px;
+  --btn-height: 44px;
+
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-primary: 0 8px 24px rgba(124, 92, 255, 0.25);
+
+  --transition-base: all 0.2s ease;
+
+  // Plan tier accent backgrounds (shared across themes)
+  --plan-starter-bg: #eef4ff;
+  --plan-basic-bg: #ede9ff;
+  --plan-advanced-bg: #dceeff;
+  --plan-pro-bg: #f7e8c8;
+  --plan-enterprise-bg: #0f172a;
+
+  --home-brand-bg: #eef1f6;
+}

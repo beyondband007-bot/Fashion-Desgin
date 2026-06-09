@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhotoStudio AI - 服装电商内容生成平台</title>
+  <style>
+    :root {
+      --font-family: Inter, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+
+      --primary: #7c5cff;
+      --primary-hover: #8d70ff;
+      --primary-2: #5b8cff;
+      --success: #3ccf91;
+      --warning: #ffb84d;
+      --danger: #ff6868;
+
+      --dark-bg: #090b14;
+      --dark-bg-2: #111827;
+      --dark-card: #121826;
+      --dark-line: rgba(255, 255, 255, .08);
+
+      --light-bg: #f5f7fb;
+      --light-card: #ffffff;
+      --light-line: #e6eaf2;
+
+      --text-dark: #ffffff;
+      --text-dark-2: #b5bdd1;
+      --text-light: #1a2235;
+      --text-light-2: #586174;
+
+      --container: 1280px;
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --shadow-card: 0 20px 60px rgba(15, 23, 42, .08);
+      --shadow-purple: 0 18px 42px rgba(124, 92, 255, .35);
+    }
+
+    [data-theme="light"] {
+      --page-bg: var(--light-bg);
+      --page-card: var(--light-card);
+      --page-line: var(--light-line);
+      --page-text: var(--text-light);
+      --page-text-2: var(--text-light-2);
+    }
+
+    [data-theme="dark"] {
+      --page-bg: var(--dark-bg);
+      --page-card: var(--dark-card);
+      --page-line: var(--dark-line);
+      --page-text: var(--text-dark);
+      --page-text-2: var(--text-dark-2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-family);
+      color: #121a2f;
+      background: #f5f7fb;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .container {
+      width: min(var(--container), calc(100% - 48px));
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      inset: 0 0 auto;
+      height: 72px;
+      z-index: 99;
+      color: #fff;
+      background: rgba(9, 11, 20, .72);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .header-inner {
+      width: min(1440px, calc(100% - 48px));
+      height: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 196px;
+    }
+
+    .logo-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      background: linear-gradient(135deg, #7c5cff, #5b8cff);
+      box-shadow: 0 8px 28px rgba(124, 92, 255, .45);
+    }
+
+    .logo-title {
+      font-size: 18px;
+      line-height: 20px;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    .logo-subtitle {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .62);
+      margin-top: 2px;
+    }
+
+    .nav {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .78);
+      white-space: nowrap;
+    }
+
+    .nav a {
+      position: relative;
+      height: 72px;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav a.active,
+    .nav a:hover {
+      color: #fff;
+    }
+
+    .nav a.active::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 38px;
+      height: 2px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      height: 44px;
+      padding: 0 24px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: var(--shadow-purple);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .btn-outline {
+      color: #fff;
+      background: rgba(255, 255, 255, .04);
+      border-color: rgba(255, 255, 255, .28);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .theme-toggle {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      color: #fff;
+      background: rgba(255, 255, 255, .06);
+      cursor: pointer;
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      min-height: 560px;
+      padding: 138px 0 0;
+      color: #fff;
+      background:
+        radial-gradient(circle at 76% 45%, rgba(91, 140, 255, .36), transparent 28%),
+        radial-gradient(circle at 64% 40%, rgba(124, 92, 255, .42), transparent 34%),
+        linear-gradient(135deg, #090b14 0%, #101427 52%, #071124 100%);
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .26;
+      background:
+        linear-gradient(90deg, transparent 0 97%, rgba(255,255,255,.12) 98% 100%),
+        linear-gradient(0deg, transparent 0 97%, rgba(255,255,255,.10) 98% 100%);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(circle at 75% 45%, #000, transparent 54%);
+    }
+
+    .hero-inner {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      align-items: center;
+      min-height: 424px;
+      gap: 40px;
+    }
+
+    .pill {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 13px;
+      border-radius: 999px;
+      color: #d8ddff;
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(124, 92, 255, .18);
+      border: 1px solid rgba(124, 92, 255, .22);
+    }
+
+    .hero-title {
+      margin: 24px 0 16px;
+      font-size: clamp(40px, 4.7vw, 72px);
+      line-height: 1.08;
+      letter-spacing: -2px;
+      font-weight: 900;
+    }
+
+    .hero-title .num {
+      color: #8d70ff;
+      margin-right: 8px;
+      text-shadow: 0 0 30px rgba(124, 92, 255, .65);
+    }
+
+    .hero-sub {
+      margin: 0;
+      font-size: clamp(22px, 2vw, 32px);
+      line-height: 1.3;
+      font-weight: 800;
+      color: rgba(255, 255, 255, .9);
+    }
+
+    .hero-points {
+      margin: 34px 0 36px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      color: rgba(255, 255, 255, .74);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .hero-points span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-grid;
+      place-items: center;
+      color: #fff;
+      font-size: 12px;
+      background: rgba(124, 92, 255, .28);
+      border: 1px solid rgba(124, 92, 255, .45);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 420px;
+    }
+
+    .model {
+      position: absolute;
+      right: 185px;
+      bottom: -2px;
+      width: 310px;
+      height: 456px;
+      border-radius: 160px 160px 0 0;
+      overflow: hidden;
+      filter: drop-shadow(0 28px 60px rgba(0,0,0,.42));
+    }
+
+    .model img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .model::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 62%, rgba(9,11,20,.78));
+    }
+
+    .orbit {
+      position: absolute;
+      right: 74px;
+      top: 198px;
+      width: 540px;
+      height: 120px;
+      border: 2px solid rgba(181, 142, 255, .34);
+      border-radius: 50%;
+      transform: rotate(-10deg);
+      filter: blur(.2px);
+    }
+
+    .spark {
+      position: absolute;
+      right: 204px;
+      top: 74px;
+      color: #fff;
+      font-size: 28px;
+      text-shadow: 0 0 24px rgba(124, 92, 255, .85);
+    }
+
+    .floating-card {
+      position: absolute;
+      border-radius: 18px;
+      color: #fff;
+      background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+      border: 1px solid rgba(255, 255, 255, .18);
+      box-shadow: 0 24px 60px rgba(0,0,0,.24);
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+    }
+
+    .input-card {
+      left: 0;
+      top: 24px;
+      width: 132px;
+      padding: 14px;
+    }
+
+    .input-card .thumb,
+    .model-card .thumb {
+      height: 90px;
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .input-card .thumb img,
+    .model-card .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .floating-label {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,.8);
+    }
+
+    .model-card {
+      left: 4px;
+      top: 178px;
+      width: 132px;
+      padding: 12px;
+    }
+
+    .result-card {
+      right: 0;
+      top: 58px;
+      width: 236px;
+      padding: 12px 12px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(124,92,255,.75));
+      box-shadow: 0 24px 80px rgba(124,92,255,.38);
+    }
+
+    .result-card .thumb {
+      height: 214px;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .result-card .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .done {
+      position: absolute;
+      right: 16px;
+      top: 14px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      color: var(--primary);
+      font-weight: 900;
+    }
+
+    /* Main */
+    .main {
+      background: linear-gradient(180deg, #fff 0%, #f7f8fc 20%, #fff 100%);
+    }
+
+    .brand-strip {
+      padding: 24px 0 28px;
+      background: #fff;
+      border-bottom: 1px solid #eef1f6;
+    }
+
+    .section-title {
+      text-align: center;
+      margin: 0 0 24px;
+      font-size: 20px;
+      line-height: 30px;
+      color: #10172a;
+      font-weight: 800;
+    }
+
+    .brand-list {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 26px;
+      align-items: center;
+      color: #10172a;
+    }
+
+    .brand {
+      text-align: center;
+      min-height: 54px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      letter-spacing: .6px;
+      opacity: .9;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #717a90;
+      letter-spacing: 0;
+    }
+
+    section {
+      padding: 34px 0;
+    }
+
+    .section-head {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 38px;
+      font-weight: 900;
+      color: #10172a;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      font-size: 14px;
+      color: #7b8497;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+    }
+
+    .feature-card {
+      height: 144px;
+      display: grid;
+      grid-template-columns: 1fr 118px;
+      gap: 14px;
+      padding: 22px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #edf0f6;
+      box-shadow: var(--shadow-card);
+      transition: .22s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(124, 92, 255, .35);
+      box-shadow: 0 24px 68px rgba(15, 23, 42, .12);
+    }
+
+    .feature-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: var(--primary);
+      background: rgba(124, 92, 255, .12);
+      font-size: 22px;
+    }
+
+    .feature-card:nth-child(3) .feature-icon { color: #22b77a; background: rgba(60, 207, 145, .14); }
+    .feature-card:nth-child(4) .feature-icon { color: #ed9c28; background: rgba(255, 184, 77, .18); }
+    .feature-card:nth-child(5) .feature-icon { color: #e9469f; background: rgba(255, 104, 188, .14); }
+
+    .feature-card h3 {
+      margin: 16px 0 6px;
+      font-size: 18px;
+      line-height: 24px;
+      font-weight: 900;
+      color: #121a2f;
+    }
+
+    .feature-card p {
+      margin: 0 0 8px;
+      font-size: 12px;
+      line-height: 18px;
+      color: #778196;
+    }
+
+    .feature-card a {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .feature-image {
+      height: 82px;
+      align-self: center;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #f2f4f9;
+    }
+
+    .feature-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .stats-bar {
+      margin: 24px auto 0;
+      padding: 22px 34px;
+      border-radius: 14px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 70% 50%, rgba(124,92,255,.35), transparent 35%),
+        linear-gradient(135deg, #050713, #10172a);
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 18px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, .18);
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+      min-width: 0;
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(124, 92, 255, .26);
+      color: #b49cff;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 23px;
+      line-height: 28px;
+      font-weight: 900;
+    }
+
+    .stat span {
+      display: block;
+      font-size: 12px;
+      color: rgba(255,255,255,.74);
+      white-space: nowrap;
+    }
+
+    .case-wrap {
+      position: relative;
+    }
+
+    .cases {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .case-card {
+      height: 120px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #edf0f6;
+      display: grid;
+      grid-template-columns: 42% 58%;
+      box-shadow: var(--shadow-card);
+    }
+
+    .case-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .case-info {
+      padding: 16px 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .case-info::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 100% 0%, rgba(124,92,255,.16), transparent 50%);
+      pointer-events: none;
+    }
+
+    .case-logo {
+      font-size: 20px;
+      line-height: 22px;
+      font-weight: 900;
+      color: #10172a;
+    }
+
+    .case-metrics {
+      display: flex;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .case-metrics strong {
+      display: block;
+      font-size: 16px;
+      color: #10172a;
+    }
+
+    .case-metrics span {
+      font-size: 11px;
+      color: #717a90;
+    }
+
+    .play {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(0,0,0,.08);
+    }
+
+    .play span {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: rgba(255,255,255,.28);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,.35);
+    }
+
+    .pricing-band {
+      display: grid;
+      grid-template-columns: 240px 1fr 240px;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .dark-panel {
+      color: #fff;
+      padding: 28px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 80% 20%, rgba(124,92,255,.36), transparent 42%),
+        linear-gradient(145deg, #080b18, #141a36);
+      box-shadow: 0 22px 66px rgba(15, 23, 42, .18);
+    }
+
+    .dark-panel h3 {
+      margin: 0 0 6px;
+      font-size: 21px;
+      line-height: 28px;
+      font-weight: 900;
+    }
+
+    .dark-panel p {
+      margin: 0 0 18px;
+      color: rgba(255,255,255,.68);
+      font-size: 13px;
+      line-height: 20px;
+    }
+
+    .dark-panel ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px;
+      display: grid;
+      gap: 10px;
+      color: rgba(255,255,255,.78);
+      font-size: 13px;
+    }
+
+    .dark-panel li::before {
+      content: "✓";
+      color: #8d70ff;
+      margin-right: 8px;
+      font-weight: 900;
+    }
+
+    .plans-box {
+      padding: 24px 28px;
+      border-radius: 16px;
+      background: linear-gradient(90deg, rgba(245,247,251,.92), rgba(255,255,255,.92));
+      border: 1px solid #edf0f6;
+      box-shadow: var(--shadow-card);
+    }
+
+    .plans-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .plans-head h3 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      color: #10172a;
+    }
+
+    .plans-head p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: #717a90;
+    }
+
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .plan {
+      min-height: 104px;
+      padding: 18px 16px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #edf0f6;
+      transition: .2s ease;
+    }
+
+    .plan:hover {
+      transform: translateY(-3px);
+      border-color: rgba(124, 92, 255, .3);
+    }
+
+    .plan:nth-child(1) { background: #eef4ff; }
+    .plan:nth-child(2) { background: #ede9ff; }
+    .plan:nth-child(3) { background: #dceeff; }
+    .plan:nth-child(4) { background: #f7e8c8; }
+    .plan:nth-child(5) { background: #fff7ea; }
+
+    .plan h4 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      font-weight: 900;
+      color: #1a2235;
+    }
+
+    .price {
+      font-size: 24px;
+      font-weight: 900;
+      color: #1a2235;
+    }
+
+    .price small {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .plan p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .faq {
+      padding-top: 0;
+    }
+
+    .faq-list {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+
+    .faq-item {
+      height: 42px;
+      padding: 0 16px;
+      border-radius: 12px;
+      background: #f7f8fc;
+      border: 1px solid #edf0f6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      color: #27334d;
+    }
+
+    .more {
+      text-align: center;
+      margin-top: 16px;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .footer {
+      padding: 44px 0 30px;
+      color: rgba(255,255,255,.75);
+      background:
+        radial-gradient(circle at 70% 0%, rgba(124,92,255,.16), transparent 32%),
+        linear-gradient(135deg, #0b1020, #070a14);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.7fr repeat(5, 1fr);
+      gap: 42px;
+    }
+
+    .footer h4 {
+      margin: 0 0 16px;
+      color: #fff;
+      font-size: 15px;
+    }
+
+    .footer p,
+    .footer a {
+      display: block;
+      margin: 9px 0;
+      font-size: 13px;
+      line-height: 20px;
+      color: rgba(255,255,255,.62);
+    }
+
+    .footer-bottom {
+      margin-top: 30px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      color: rgba(255,255,255,.48);
+      font-size: 12px;
+    }
+
+    .social {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .social span {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: rgba(255,255,255,.1);
+    }
+
+    /* Light mode preview support */
+    [data-theme="light"] .header {
+      background: rgba(255,255,255,.76);
+      color: #111827;
+      border-bottom-color: #e6eaf2;
+    }
+
+    [data-theme="light"] .nav {
+      color: #586174;
+    }
+
+    [data-theme="light"] .nav a.active,
+    [data-theme="light"] .nav a:hover,
+    [data-theme="light"] .logo-title {
+      color: #1a2235;
+    }
+
+    [data-theme="light"] .logo-subtitle {
+      color: #667085;
+    }
+
+    [data-theme="light"] .btn-outline {
+      color: #1a2235;
+      border-color: #d7ddea;
+      background: rgba(255,255,255,.56);
+    }
+
+    [data-theme="light"] .theme-toggle {
+      color: #1a2235;
+      background: #fff;
+      border-color: #e6eaf2;
+    }
+
+    /* Responsive */
+    @media (max-width: 1180px) {
+      .nav {
+        gap: 18px;
+        font-size: 13px;
+      }
+
+      .hero-inner {
+        grid-template-columns: 1fr;
+        padding-bottom: 50px;
+      }
+
+      .hero-visual {
+        min-height: 430px;
+      }
+
+      .features {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .feature-card:nth-child(5) {
+        grid-column: span 2;
+      }
+
+      .brand-list {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .stats-bar {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .pricing-band {
+        grid-template-columns: 1fr;
+      }
+
+      .plans {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .cases {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .faq-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container,
+      .header-inner {
+        width: min(100% - 28px, var(--container));
+      }
+
+      .header {
+        height: 64px;
+      }
+
+      .logo {
+        min-width: 0;
+      }
+
+      .nav {
+        display: none;
+      }
+
+      .header-actions .btn-outline {
+        display: none;
+      }
+
+      .header-actions .btn-primary {
+        height: 38px;
+        padding: 0 14px;
+        font-size: 13px;
+      }
+
+      .hero {
+        padding-top: 106px;
+        min-height: auto;
+      }
+
+      .hero-title {
+        font-size: 42px;
+        letter-spacing: -1px;
+      }
+
+      .hero-sub {
+        font-size: 22px;
+      }
+
+      .hero-points {
+        gap: 14px;
+        margin: 24px 0;
+      }
+
+      .hero-visual {
+        transform: scale(.82);
+        transform-origin: top center;
+        margin: -18px 0 -84px;
+      }
+
+      .model {
+        right: 80px;
+      }
+
+      .input-card,
+      .model-card {
+        left: -18px;
+      }
+
+      .result-card {
+        right: -30px;
+      }
+
+      .brand-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      section {
+        padding: 26px 0;
+      }
+
+      .features,
+      .cases,
+      .plans,
+      .faq-list {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-card,
+      .feature-card:nth-child(5) {
+        grid-column: auto;
+      }
+
+      .stats-bar {
+        grid-template-columns: 1fr;
+        padding: 22px;
+      }
+
+      .stat {
+        justify-content: flex-start;
+      }
+
+      .plans-head {
+        display: block;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .footer-grid > div:first-child {
+        grid-column: span 2;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .logo-title {
+        font-size: 15px;
+      }
+
+      .logo-subtitle {
+        display: none;
+      }
+
+      .hero-title {
+        font-size: 36px;
+      }
+
+      .hero-actions .btn {
+        width: 100%;
+      }
+
+      .hero-visual {
+        transform: scale(.7);
+        margin-left: -22px;
+        margin-right: -22px;
+        margin-bottom: -132px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-grid > div:first-child {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a class="logo" href="#">
+        <div class="logo-mark">AI</div>
+        <div>
+          <div class="logo-title">PhotoStudio AI</div>
+          <div class="logo-subtitle">服装电商内容生成平台</div>
+        </div>
+      </a>
+
+      <nav class="nav">
+        <a class="active" href="#">首页</a>
+        <a href="#features">AI 在线生成</a>
+        <a href="#features">AI 编辑工具箱</a>
+        <a href="#features">视频生成</a>
+        <a href="#pricing">成片交付</a>
+        <a href="#features">AI 创意生图</a>
+        <a href="#pricing">企业版</a>
+        <a href="#pricing">价格/积分</a>
+        <a href="#footer">更多⌄</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="theme-toggle" id="themeToggle" title="切换主题">☾</button>
+        <button class="btn btn-outline">登录</button>
+        <button class="btn btn-primary">立即注册</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <div class="pill">✦ AI 驱动的服装电商视觉内容生产平台</div>
+        <h1 class="hero-title"><span class="num">3</span>步生成专业商拍大片</h1>
+        <p class="hero-sub">极低成本 · 极高效率 · 极致效果</p>
+
+        <div class="hero-points">
+          <span><i class="check">✓</i>AI 模特试衣</span>
+          <span><i class="check">✓</i>批量生成</span>
+          <span><i class="check">✓</i>高清画质</span>
+          <span><i class="check">✓</i>商用无忧</span>
+        </div>
+
+        <div class="hero-actions">
+          <button class="btn btn-primary">立即生成 →</button>
+          <button class="btn btn-outline">立即咨询 🎧</button>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="orbit"></div>
+        <div class="spark">✦</div>
+
+        <div class="model">
+          <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=720&q=90" alt="">
+        </div>
+
+        <div class="floating-card input-card">
+          <div class="thumb">
+            <img src="https://images.unsplash.com/photo-1582142306909-195724d33ffc?auto=format&fit=crop&w=300&q=80" alt="">
+          </div>
+          <div class="floating-label">人台图试穿</div>
+        </div>
+
+        <div class="floating-card model-card">
+          <div class="thumb">
+            <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=300&q=80" alt="">
+          </div>
+          <div class="floating-label">选择模特</div>
+        </div>
+
+        <div class="floating-card result-card">
+          <div class="done">✓</div>
+          <div class="thumb">
+            <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=420&q=90" alt="">
+          </div>
+          <div class="floating-label">生成结果</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main">
+    <div class="brand-strip">
+      <div class="container">
+        <h2 class="section-title">500+ KA 品牌的共同选择</h2>
+        <div class="brand-list">
+          <div class="brand">LI-NING<small>李宁</small></div>
+          <div class="brand">PEACEBIRD<small>太平鸟</small></div>
+          <div class="brand">BOSIDENG<small>波司登</small></div>
+          <div class="brand">SEMIR<small>森马</small></div>
+          <div class="brand">CAMEL<small>骆驼</small></div>
+          <div class="brand">UR<small>URBAN REVIVO</small></div>
+          <div class="brand">ochirly<small>欧时力</small></div>
+          <div class="brand">INMAN<small>茵曼</small></div>
+        </div>
+      </div>
+    </div>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-head">
+          <h2>核心功能</h2>
+          <p>一站式 AI 商拍解决方案，满足您的所有需求</p>
+        </div>
+
+        <div class="features">
+          <article class="feature-card">
+            <div>
+              <div class="feature-icon">▣</div>
+              <h3>AI 在线生成</h3>
+              <p>衣服图 / 真人图 / 人台图智能转换</p>
+              <a href="#">立即使用 →</a>
+            </div>
+            <div class="feature-image">
+              <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=320&q=80" alt="">
+            </div>
+          </article>
+
+          <article class="feature-card">
+            <div>
+              <div class="feature-icon">✎</div>
+              <h3>AI 编辑工具箱</h3>
+              <p>智能修图、专业级图像处理</p>
+              <a href="#">立即使用 →</a>
+            </div>
+            <div class="feature-image">
+              <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=320&q=80" alt="">
+            </div>
+          </article>
+
+          <article class="feature-card">
+            <div>
+              <div class="feature-icon">▶</div>
+              <h3>视频生成</h3>
+              <p>图片转视频，商品展示更吸睛</p>
+              <a href="#">立即使用 →</a>
+            </div>
+            <div class="feature-image">
+              <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=320&q=80" alt="">
+            </div>
+          </article>
+
+          <article class="feature-card">
+            <div>
+              <div class="feature-icon">✉</div>
+              <h3>成片交付服务</h3>
+              <p>专业团队，48小时内交付</p>
+              <a href="#">立即咨询 →</a>
+            </div>
+            <div class="feature-image">
+              <img src="https://images.unsplash.com/photo-1495121605193-b116b5b09a9b?auto=format&fit=crop&w=320&q=80" alt="">
+            </div>
+          </article>
+
+          <article class="feature-card">
+            <div>
+              <div class="feature-icon">✩</div>
+              <h3>AI 创意生图</h3>
+              <p>创意设计，个性化定制</p>
+              <a href="#">立即使用 →</a>
+            </div>
+            <div class="feature-image">
+              <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=320&q=80" alt="">
+            </div>
+          </article>
+        </div>
+
+        <div class="stats-bar">
+          <div class="stat"><div class="stat-icon">♕</div><div><strong>500+</strong><span>服务 KA 品牌</span></div></div>
+          <div class="stat"><div class="stat-icon">▣</div><div><strong>30,000,000+</strong><span>累计生成图片</span></div></div>
+          <div class="stat"><div class="stat-icon">↗</div><div><strong>200%</strong><span>GMV 最高提升</span></div></div>
+          <div class="stat"><div class="stat-icon">⚡</div><div><strong>10x+</strong><span>产出速度提升</span></div></div>
+          <div class="stat"><div class="stat-icon">⏱</div><div><strong>15天 → 2天</strong><span>视觉制作周期</span></div></div>
+          <div class="stat"><div class="stat-icon">◎</div><div><strong>80%+</strong><span>成本削减</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cases">
+      <div class="container">
+        <div class="section-head">
+          <h2>成功案例</h2>
+          <p>用效果说话，见证我们的实力</p>
+        </div>
+
+        <div class="cases">
+          <article class="case-card">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80" alt="">
+            <div class="case-info">
+              <div class="case-logo">波司登</div>
+              <div class="case-metrics">
+                <div><strong>320%</strong><span>GMV 提升</span></div>
+                <div><strong>85%</strong><span>成本降低</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="case-card">
+            <img src="https://images.unsplash.com/photo-1545912452-8aea7e25a3d3?auto=format&fit=crop&w=300&q=80" alt="">
+            <div class="case-info">
+              <div class="case-logo">太平鸟</div>
+              <div class="case-metrics">
+                <div><strong>180%</strong><span>GMV 提升</span></div>
+                <div><strong>75%</strong><span>成本降低</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="case-card" style="position:relative">
+            <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=300&q=80" alt="">
+            <div class="play"><span>▶</span></div>
+            <div class="case-info">
+              <div class="case-logo">UR</div>
+              <div class="case-metrics">
+                <div><strong>250%</strong><span>GMV 提升</span></div>
+                <div><strong>70%</strong><span>成本降低</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="case-card">
+            <img src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&w=300&q=80" alt="">
+            <div class="case-info">
+              <div class="case-logo">LI-NING</div>
+              <div class="case-metrics">
+                <div><strong>200%</strong><span>GMV 提升</span></div>
+                <div><strong>70%</strong><span>成本降低</span></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="container pricing-band">
+        <aside class="dark-panel">
+          <h3>新人专享体验</h3>
+          <p>免费体验 20 积分</p>
+          <ul>
+            <li>体验所有核心功能</li>
+            <li>生成高清商拍效果图</li>
+          </ul>
+          <button class="btn btn-primary">立即领取</button>
+        </aside>
+
+        <div class="plans-box">
+          <div class="plans-head">
+            <div>
+              <h3>选择适合您的套餐</h3>
+              <p>多种套餐选择，满足不同需求</p>
+            </div>
+            <button class="btn btn-primary">查看详情 →</button>
+          </div>
+
+          <div class="plans">
+            <article class="plan">
+              <h4>新人体验</h4>
+              <div class="price">¥0<small> 起</small></div>
+              <p>20 积分</p>
+            </article>
+            <article class="plan">
+              <h4>基础会员</h4>
+              <div class="price">¥99<small>/月</small></div>
+              <p>200 积分/月</p>
+            </article>
+            <article class="plan">
+              <h4>高级会员</h4>
+              <div class="price">¥299<small>/月</small></div>
+              <p>800 积分/月</p>
+            </article>
+            <article class="plan">
+              <h4>专业会员</h4>
+              <div class="price">¥599<small>/月</small></div>
+              <p>2000 积分/月</p>
+            </article>
+            <article class="plan">
+              <h4>企业版</h4>
+              <div class="price">定制报价</div>
+              <p>专属服务</p>
+            </article>
+          </div>
+        </div>
+
+        <aside class="dark-panel">
+          <h3>企业合作</h3>
+          <p>您想长期合作？</p>
+          <ul>
+            <li>API 接口对接</li>
+            <li>私有化部署</li>
+          </ul>
+          <button class="btn btn-primary">联系我们</button>
+        </aside>
+      </div>
+    </section>
+
+    <section class="faq">
+      <div class="container">
+        <div class="section-head">
+          <h2>常见问题</h2>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item">AI 生成的图片可以商用吗？<span>⌄</span></div>
+          <div class="faq-item">如何扣除积分？<span>⌄</span></div>
+          <div class="faq-item">生成一张图片需要多长时间？<span>⌄</span></div>
+          <div class="faq-item">支持哪些图片格式？<span>⌄</span></div>
+          <div class="faq-item">可以批量生成吗？<span>⌄</span></div>
+        </div>
+        <div class="more">更多问题 →</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="logo" href="#">
+            <div class="logo-mark">AI</div>
+            <div>
+              <div class="logo-title">PhotoStudio AI</div>
+              <div class="logo-subtitle">服装电商内容生成平台</div>
+            </div>
+          </a>
+          <p style="margin-top:18px;max-width:320px">
+            AI 驱动的服装电商视觉内容生产平台，助力商家降本增效，提升转化。
+          </p>
+        </div>
+
+        <div>
+          <h4>产品</h4>
+          <a href="#">AI 在线生成</a>
+          <a href="#">AI 编辑工具箱</a>
+          <a href="#">视频生成</a>
+          <a href="#">成片交付</a>
+        </div>
+
+        <div>
+          <h4>解决方案</h4>
+          <a href="#">电商平台</a>
+          <a href="#">品牌商家</a>
+          <a href="#">设计师</a>
+          <a href="#">广告公司</a>
+        </div>
+
+        <div>
+          <h4>资源中心</h4>
+          <a href="#">使用教程</a>
+          <a href="#">API 文档</a>
+          <a href="#">帮助中心</a>
+          <a href="#">更新日志</a>
+        </div>
+
+        <div>
+          <h4>关于我们</h4>
+          <a href="#">公司介绍</a>
+          <a href="#">联系我们</a>
+          <a href="#">加入我们</a>
+          <a href="#">隐私政策</a>
+        </div>
+
+        <div>
+          <h4>关注我们</h4>
+          <div class="social">
+            <span>微</span><span>抖</span><span>B</span><span>小</span>
+          </div>
+          <p>客服：support@example.com</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 PhotoStudio AI. All Rights Reserved.</div>
+        <div>浙ICP备xxxxxxxx号</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const toggle = document.getElementById('themeToggle');
+
+    toggle.addEventListener('click', () => {
+      const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = nextTheme;
+      toggle.textContent = nextTheme === 'dark' ? '☾' : '☀';
+    });
+  </script>
+</body>
+</html>
