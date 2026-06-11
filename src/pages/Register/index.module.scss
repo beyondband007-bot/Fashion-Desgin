@@ -1,0 +1,30 @@
+.registerShell {
+  width: min(520px, 100%);
+  grid-template-columns: 1fr !important;
+}
+
+.strengthBar {
+  margin-bottom: 16px;
+
+  span {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+}
+
+.agreement {
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.benefit {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 13px;
+}

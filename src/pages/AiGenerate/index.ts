@@ -1,1 +1,5 @@
 export { AiGeneratePage } from './index.tsx'
+export { ConfigColumn } from './components/ConfigColumn'
+export type { ConfigColumnProps, ConfigColumnVariant } from './components/ConfigColumn'
+export { ConfigCard } from './components/ConfigCard'
+export type { ConfigCardProps } from './components/ConfigCard'

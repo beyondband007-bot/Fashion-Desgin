@@ -1,0 +1,155 @@
+.page {
+  padding: 24px;
+  overflow-y: auto;
+  height: calc(100vh - var(--header-height));
+  background: var(--bg-primary);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    color: var(--text-primary);
+  }
+
+  p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
+.taskGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.taskCard {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.taskCheckbox {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+}
+
+.taskCover {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.taskBody {
+  padding: 14px;
+}
+
+.taskTitle {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.taskMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.taskType {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.statusTag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.statusRunning {
+  background: rgba(0, 122, 255, 0.12);
+  color: var(--primary);
+}
+
+.statusSuccess {
+  background: rgba(60, 207, 145, 0.14);
+  color: var(--success);
+}
+
+.statusFailed {
+  background: rgba(255, 107, 107, 0.14);
+  color: var(--danger);
+}
+
+.statusQueued,
+.statusPending {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.taskFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.taskActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.progressBar {
+  height: 4px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--primary);
+  }
+}

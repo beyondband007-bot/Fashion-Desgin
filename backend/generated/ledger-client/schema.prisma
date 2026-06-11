@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../generated/ledger-client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("LEDGER_DATABASE_URL")
+}
+
+enum AccountOwnerType {
+  user
+  enterprise
+}
+
+enum CreditAccountStatus {
+  active
+  frozen
+  closed
+}
+
+enum BillingTaskStatus {
+  created
+  frozen
+  partially_settled
+  settled
+  refunding
+  refunded
+  cancelled
+  failed
+}
+
+enum IdempotencyStatus {
+  processing
+  succeeded
+  failed
+}
+
+enum TransactionType {
+  grant
+  recharge
+  freeze
+  settle
+  release
+  refund
+  expire
+  adjust_credit
+  adjust_debit
+  reverse
+}
+
+enum TransactionDirection {
+  credit
+  debit
+  lock
+  unlock
+}
+
+model CreditAccount {
+  id               String              @id @db.Char(26)
+  ownerType        AccountOwnerType    @map("owner_type")
+  ownerId          String              @map("owner_id") @db.Char(26)
+  currency         String              @default("CREDIT") @db.VarChar(16)
+  totalBalance     Decimal             @default(0) @map("total_balance") @db.Decimal(18, 4)
+  lockedBalance    Decimal             @default(0) @map("locked_balance") @db.Decimal(18, 4)
+  availableBalance Decimal             @default(0) @map("available_balance") @db.Decimal(18, 4)
+  status           CreditAccountStatus
+  version          BigInt              @default(0)
+  createdAt        DateTime            @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt        DateTime            @updatedAt @map("updated_at") @db.DateTime(3)
+  billingTasks     BillingTask[]
+  transactions     CreditTransaction[]
+
+  @@unique([ownerType, ownerId, currency], map: "uk_credit_accounts_owner_currency")
+  @@map("credit_accounts")
+}
+
+model BillingTask {
+  id                   String              @id @db.Char(26)
+  accountId            String              @map("account_id") @db.Char(26)
+  bizType              String              @map("biz_type") @db.VarChar(32)
+  bizId                String              @map("biz_id") @db.VarChar(64)
+  estimatedPoints      Decimal             @map("estimated_points") @db.Decimal(18, 4)
+  frozenPoints         Decimal             @default(0) @map("frozen_points") @db.Decimal(18, 4)
+  settledPoints        Decimal             @default(0) @map("settled_points") @db.Decimal(18, 4)
+  refundedPoints       Decimal             @default(0) @map("refunded_points") @db.Decimal(18, 4)
+  status               BillingTaskStatus
+  pricingSnapshotJson  Json?               @map("pricing_snapshot_json")
+  freezeIdempotencyKey String              @map("freeze_idempotency_key") @db.VarChar(128)
+  settleIdempotencyKey String?             @map("settle_idempotency_key") @db.VarChar(128)
+  refundIdempotencyKey String?             @map("refund_idempotency_key") @db.VarChar(128)
+  lockExpireAt         DateTime?           @map("lock_expire_at") @db.DateTime(3)
+  frozenAt             DateTime?           @map("frozen_at") @db.DateTime(3)
+  settledAt            DateTime?           @map("settled_at") @db.DateTime(3)
+  refundedAt           DateTime?           @map("refunded_at") @db.DateTime(3)
+  createdAt            DateTime            @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt            DateTime            @updatedAt @map("updated_at") @db.DateTime(3)
+  version              Int                 @default(0)
+  account              CreditAccount       @relation(fields: [accountId], references: [id])
+  transactions         CreditTransaction[]
+
+  @@unique([bizType, bizId], map: "uk_billing_tasks_biz")
+  @@unique([freezeIdempotencyKey], map: "uk_billing_tasks_freeze_idempotency_key")
+  @@index([accountId], map: "idx_billing_tasks_account_id")
+  @@map("billing_tasks")
+}
+
+model CreditTransaction {
+  id                    String               @id @db.Char(26)
+  accountId             String               @map("account_id") @db.Char(26)
+  grantId               String?              @map("grant_id") @db.Char(26)
+  billingTaskId         String?              @map("billing_task_id") @db.Char(26)
+  transactionType       TransactionType      @map("transaction_type")
+  direction             TransactionDirection
+  points                Decimal              @db.Decimal(18, 4)
+  totalBalanceBefore    Decimal              @map("total_balance_before") @db.Decimal(18, 4)
+  totalBalanceAfter     Decimal              @map("total_balance_after") @db.Decimal(18, 4)
+  lockedBalanceBefore   Decimal              @map("locked_balance_before") @db.Decimal(18, 4)
+  lockedBalanceAfter    Decimal              @map("locked_balance_after") @db.Decimal(18, 4)
+  availableBalanceAfter Decimal              @map("available_balance_after") @db.Decimal(18, 4)
+  bizType               String               @map("biz_type") @db.VarChar(32)
+  bizId                 String               @map("biz_id") @db.VarChar(64)
+  sourceOrderId         String?              @map("source_order_id") @db.VarChar(64)
+  refTransactionId      String?              @map("ref_transaction_id") @db.Char(26)
+  descriptionCode       String               @map("description_code") @db.VarChar(64)
+  metadataJson          Json?                @map("metadata_json")
+  createdAt             DateTime             @default(now()) @map("created_at") @db.DateTime(3)
+  account               CreditAccount        @relation(fields: [accountId], references: [id])
+  billingTask           BillingTask?         @relation(fields: [billingTaskId], references: [id])
+
+  @@index([accountId, createdAt], map: "idx_credit_transactions_account_created")
+  @@index([bizType, bizId], map: "idx_credit_transactions_biz")
+  @@index([sourceOrderId], map: "idx_credit_transactions_source_order_id")
+  @@map("credit_transactions")
+}
+
+model IdempotencyKey {
+  id             String            @id @db.Char(26)
+  caller         String            @db.VarChar(64)
+  operation      String            @db.VarChar(64)
+  idempotencyKey String            @map("idempotency_key") @db.VarChar(128)
+  requestHash    String            @map("request_hash") @db.Char(64)
+  status         IdempotencyStatus
+  resourceType   String?           @map("resource_type") @db.VarChar(32)
+  resourceId     String?           @map("resource_id") @db.Char(26)
+  responseJson   Json?             @map("response_json")
+  errorCode      String?           @map("error_code") @db.VarChar(64)
+  expiresAt      DateTime?         @map("expires_at") @db.DateTime(3)
+  createdAt      DateTime          @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt      DateTime          @updatedAt @map("updated_at") @db.DateTime(3)
+
+  @@unique([caller, operation, idempotencyKey], map: "uk_idempotency_keys_caller_operation_key")
+  @@map("idempotency_keys")
+}

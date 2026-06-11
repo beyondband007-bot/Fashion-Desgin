@@ -2,54 +2,79 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { mockService } from '@/services/mockService'
+import { frontendApi } from '@/api/frontend'
+import { useTaskRealtime } from '@/hooks/useTaskRealtime'
 import { useCreditStore } from '@/store/creditStore'
-import type { GenerateMode } from '@/types/generate'
+import {
+  selectModuleRecentResultsFromState,
+  selectModuleRecentResultsKey,
+  useTaskStore,
+} from '@/store/taskStore'
+import type { GenerateMode, RecentResult } from '@/types/generate'
 
+import { ChangeModelConfig } from './components/ChangeModelConfig'
+import { ConfigColumn } from './components/ConfigColumn'
 import { GenerateActionBar } from './components/GenerateActionBar'
-import { GenerateHeader } from './components/GenerateHeader'
-import { ModeTabs } from './components/ModeTabs'
 import { ModelDrawer } from './components/ModelDrawer'
-import { ModelStep } from './components/ModelStep'
-import { OutputConfigStep } from './components/OutputConfigStep'
 import { PreviewPanel } from './components/PreviewPanel'
+import { SameStyleConfig } from './components/SameStyleConfig'
 import { SceneDrawer } from './components/SceneDrawer'
-import { SceneStep } from './components/SceneStep'
-import { UploadStep } from './components/UploadStep'
-import { WorkspaceSidebar } from './components/WorkspaceSidebar'
+import { ToolSidebar } from './components/ToolSidebar'
+import { TryOnConfig } from './components/TryOnConfig'
+import { TryOnModeTabs } from './components/TryOnModeTabs'
 import { useGenerateWorkbench } from './hooks/useGenerateWorkbench'
 import styles from './index.module.scss'
 
 const modeFromPath = (pathname: string): GenerateMode => {
+  if (pathname.includes('/same-style')) return 'same-style'
   if (pathname.includes('/real')) return 'real'
   if (pathname.includes('/mannequin')) return 'mannequin'
   if (pathname.includes('/model')) return 'model'
   return 'clothes'
 }
 
+const EMPTY_RECENT: RecentResult[] = []
+
 export function AiGeneratePage() {
   const navigate = useNavigate()
   const location = useLocation()
   const mode = modeFromPath(location.pathname)
+  const isSameStyle = mode === 'same-style'
+  const isChangeModel = mode === 'model'
+  const taskModule = 'ai_generate'
 
   const balance = useCreditStore((s) => s.balance)
   const setBalance = useCreditStore((s) => s.setBalance)
 
   const { data: models = [] } = useQuery({
     queryKey: ['workbench-models'],
-    queryFn: mockService.getWorkbenchModels,
+    queryFn: frontendApi.getWorkbenchModels,
   })
   const { data: scenes = [] } = useQuery({
     queryKey: ['workbench-scenes'],
-    queryFn: mockService.getWorkbenchScenes,
+    queryFn: frontendApi.getWorkbenchScenes,
   })
-  const { data: recent = [] } = useQuery({
+  const { data: recentResults } = useQuery({
     queryKey: ['recent-results'],
-    queryFn: mockService.getRecentResults,
+    queryFn: frontendApi.getRecentResults,
   })
-  const { data: creditInfo } = useQuery({
-    queryKey: ['credit-info'],
-    queryFn: mockService.getCreditInfo,
+
+  const recent = recentResults ?? EMPTY_RECENT
+  const moduleRecentKey = useTaskStore((state) => selectModuleRecentResultsKey(state, taskModule, 8))
+  const realtimeRecentResults = useMemo(() => {
+    if (!moduleRecentKey) {
+      return []
+    }
+
+    return selectModuleRecentResultsFromState(useTaskStore.getState(), taskModule, 8)
+  }, [moduleRecentKey, taskModule])
+  const initialRecent = useMemo(
+    () => (realtimeRecentResults.length > 0 ? realtimeRecentResults : recent),
+    [realtimeRecentResults, recent],
+  )
+
+  useTaskRealtime('ai-generate-page', {
+    modules: [taskModule],
   })
 
   const [modelDrawerOpen, setModelDrawerOpen] = useState(false)
@@ -58,7 +83,7 @@ export function AiGeneratePage() {
   const workbench = useGenerateWorkbench({
     mode,
     creditBalance: balance,
-    initialRecent: recent,
+    initialRecent,
     onConsumeCredits: (amount) => {
       setBalance(useCreditStore.getState().balance - amount)
     },
@@ -69,67 +94,89 @@ export function AiGeneratePage() {
     [scenes, workbench.selectedSceneId],
   )
 
+  const isTryOn = mode === 'clothes' || mode === 'real'
+
   return (
-    <div className={styles.workspace}>
-      <WorkspaceSidebar />
-      <div className={styles.workspaceMain}>
-        <div className={styles.page}>
-          <GenerateHeader balance={balance} todayTasks={creditInfo?.todayTasks ?? 0} />
-          <ModeTabs active={mode} onChange={navigate} />
+    <>
+      <div className={styles.workbench}>
+        <ToolSidebar />
 
-          <div className={styles.contentGrid}>
-            <div className={styles.configPanel}>
-              <div className={styles.configScroll}>
-                <UploadStep
-                  files={workbench.files}
-                  status={workbench.status}
-                  onUpload={workbench.uploadFiles}
-                  onRemove={workbench.removeFile}
-                />
-                <ModelStep
-                  models={models}
-                  selectedId={workbench.selectedModelId}
-                  onSelect={workbench.setSelectedModelId}
-                  onOpenDrawer={() => setModelDrawerOpen(true)}
-                />
-                <SceneStep
-                  scenes={scenes}
-                  selectedId={workbench.selectedSceneId}
-                  onSelect={workbench.setSelectedSceneId}
-                  onOpenDrawer={() => setSceneDrawerOpen(true)}
-                />
-                <OutputConfigStep config={workbench.output} onChange={workbench.setOutput} />
-              </div>
-              <GenerateActionBar
-                estimatedCost={workbench.estimatedCost}
-                balance={balance}
-                canGenerate={workbench.canGenerate}
-                insufficientCredits={workbench.insufficientCredits}
-                status={workbench.status}
-                onGenerate={workbench.startGenerate}
-              />
-            </div>
-
-            <PreviewPanel
+        <ConfigColumn
+          header={
+            <>
+              {isTryOn ? <TryOnModeTabs active={mode} onChange={navigate} /> : null}
+            </>
+          }
+          footer={
+            <GenerateActionBar
+              estimatedCost={workbench.estimatedCost}
+              outputCount={workbench.output.count}
+              canGenerate={workbench.canGenerate}
+              insufficientCredits={workbench.insufficientCredits}
               status={workbench.status}
-              progress={workbench.progress}
-              processingStage={workbench.processingStage}
-              resultImage={workbench.resultImage}
-              sourceImage={workbench.sourceImage}
-              scene={selectedScene}
-              compareMode={workbench.compareMode}
-              comparePosition={workbench.comparePosition}
-              errorMessage={workbench.errorMessage}
-              recentResults={workbench.recentResults}
-              activeResultId={workbench.activeResultId}
-              onToggleCompare={() => workbench.setCompareMode(!workbench.compareMode)}
-              onComparePositionChange={workbench.setComparePosition}
-              onRegenerate={workbench.startGenerate}
-              onResetFailed={workbench.resetFailed}
-              onSelectRecent={workbench.selectRecent}
+              onGenerate={workbench.startGenerate}
+              onCountChange={(count) => workbench.setOutput({ ...workbench.output, count })}
             />
-          </div>
-        </div>
+          }
+        >
+          {isChangeModel ? (
+            <ChangeModelConfig
+              files={workbench.files}
+              status={workbench.status}
+              scenes={scenes}
+              selectedSceneId={workbench.selectedSceneId}
+              onUpload={workbench.uploadFiles}
+              onRemove={workbench.removeFile}
+              onOpenModelDrawer={() => setModelDrawerOpen(true)}
+              onOpenSceneDrawer={() => setSceneDrawerOpen(true)}
+              onSelectScene={workbench.setSelectedSceneId}
+            />
+          ) : isSameStyle ? (
+            <SameStyleConfig
+              files={workbench.files}
+              status={workbench.status}
+              onUpload={workbench.uploadFiles}
+              onRemove={workbench.removeFile}
+            />
+          ) : (
+            <TryOnConfig
+              mode={mode}
+              files={workbench.files}
+              status={workbench.status}
+              models={models}
+              scenes={scenes}
+              output={workbench.output}
+              selectedModelId={workbench.selectedModelId}
+              selectedSceneId={workbench.selectedSceneId}
+              onUpload={workbench.uploadFiles}
+              onRemove={workbench.removeFile}
+              onSelectModel={workbench.setSelectedModelId}
+              onSelectScene={workbench.setSelectedSceneId}
+              onOutputChange={workbench.setOutput}
+              onOpenModelDrawer={() => setModelDrawerOpen(true)}
+              onOpenSceneDrawer={() => setSceneDrawerOpen(true)}
+            />
+          )}
+        </ConfigColumn>
+
+        <PreviewPanel
+          status={workbench.status}
+          progress={workbench.progress}
+          processingStage={workbench.processingStage}
+          resultImage={workbench.resultImage}
+          sourceImage={workbench.sourceImage}
+          scene={selectedScene}
+          compareMode={workbench.compareMode}
+          comparePosition={workbench.comparePosition}
+          errorMessage={workbench.errorMessage}
+          recentResults={workbench.recentResults}
+          activeResultId={workbench.activeResultId}
+          onToggleCompare={() => workbench.setCompareMode(!workbench.compareMode)}
+          onComparePositionChange={workbench.setComparePosition}
+          onRegenerate={workbench.startGenerate}
+          onResetFailed={workbench.resetFailed}
+          onSelectRecent={workbench.selectRecent}
+        />
       </div>
 
       <ModelDrawer
@@ -146,6 +193,6 @@ export function AiGeneratePage() {
         onClose={() => setSceneDrawerOpen(false)}
         onSelect={workbench.setSelectedSceneId}
       />
-    </div>
+    </>
   )
 }

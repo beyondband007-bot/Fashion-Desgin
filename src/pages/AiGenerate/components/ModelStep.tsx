@@ -1,5 +1,5 @@
-import { Button } from '@arco-design/web-react'
-import { IconHeart, IconHeartFill } from '@arco-design/web-react/icon'
+import { Select } from '@arco-design/web-react'
+import { useState } from 'react'
 
 import type { WorkbenchModel } from '@/types/generate'
 
@@ -13,58 +13,49 @@ type ModelStepProps = {
 }
 
 export function ModelStep({ models, selectedId, onSelect, onOpenDrawer }: ModelStepProps) {
-  const recommended = models.slice(0, 4)
+  const [engine, setEngine] = useState<'artmuse' | 'pro'>('artmuse')
 
   return (
-    <section className={styles.stepCard}>
-      <div className={styles.stepHead}>
-        <h3 className={styles.stepTitle}>2. 选择 AI 模特</h3>
-        <div className={styles.stepTabs}>
-          <button type="button" className={styles.stepTabActive}>
-            推荐模特
+    <>
+      <section className={styles.configSection}>
+        <div className={styles.configSectionTitle}>模型选择</div>
+        <div className={styles.toggleGroup}>
+          <button
+            type="button"
+            className={`${styles.toggleBtn}${engine === 'artmuse' ? ` ${styles.toggleBtnActive}` : ''}`}
+            onClick={() => setEngine('artmuse')}
+          >
+            ArtMuse
           </button>
-          <button type="button" className={styles.stepTab}>
-            我的收藏
-          </button>
-          <button type="button" className={styles.stepTab} onClick={onOpenDrawer}>
-            更多筛选
+          <button
+            type="button"
+            className={`${styles.toggleBtn}${engine === 'pro' ? ` ${styles.toggleBtnActive}` : ''}`}
+            onClick={() => setEngine('pro')}
+          >
+            全能模型
+            <span className={styles.memberBadge}>会员</span>
           </button>
         </div>
-      </div>
+      </section>
 
-      <div className={styles.modelRow}>
-        {recommended.map((model) => {
-          const active = selectedId === model.id
-          return (
-            <button
-              key={model.id}
-              type="button"
-              className={`${styles.modelCard}${active ? ` ${styles.modelCardActive}` : ''}`}
-              onClick={() => onSelect(model.id)}
-            >
-              <img src={model.avatar} alt={model.name} className={styles.modelAvatar} />
-              <div className={styles.modelInfo}>
-                <strong>{model.name}</strong>
-                <span>
-                  {model.race} · {model.age}
-                </span>
-                <div className={styles.modelTags}>
-                  {model.style.slice(0, 2).map((tag) => (
-                    <em key={tag}>{tag}</em>
-                  ))}
-                </div>
-              </div>
-              <span className={styles.modelFavorite} aria-hidden>
-                {model.favorite ? <IconHeartFill /> : <IconHeart />}
-              </span>
-            </button>
-          )
-        })}
-      </div>
-
-      <Button type="outline" long className={styles.stepMoreBtn ?? ''} onClick={onOpenDrawer}>
-        浏览全部模特
-      </Button>
-    </section>
+      <section className={styles.configSection}>
+        <div className={styles.configSectionTitle}>模特</div>
+        <Select
+          placeholder="模特（非必选）"
+          value={selectedId ?? ''}
+          onChange={(value) => value && onSelect(value)}
+          className={styles.configSelect ?? ''}
+        >
+          {models.map((model) => (
+            <Select.Option key={model.id} value={model.id}>
+              {model.name} · {model.race}
+            </Select.Option>
+          ))}
+        </Select>
+        <button type="button" className={styles.configSectionLink} onClick={onOpenDrawer}>
+          更多模特 ›
+        </button>
+      </section>
+    </>
   )
 }

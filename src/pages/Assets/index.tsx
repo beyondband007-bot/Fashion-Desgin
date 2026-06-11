@@ -1,50 +1,124 @@
-import { Button, Card, Grid, Tag, Typography } from '@arco-design/web-react'
+import { Button } from '@arco-design/web-react'
+import { IconUpload } from '@arco-design/web-react/icon'
 import { useQuery } from '@tanstack/react-query'
+import { useMemo, useState } from 'react'
 
-import { FilterBar } from '@/components/common/FilterBar'
-import { PageHeader } from '@/components/common/PageHeader'
-import { UploadCard } from '@/components/common/UploadCard'
-import { mockService } from '@/services/mockService'
+import { frontendApi } from '@/api/frontend'
+import { formatDateTime } from '@/utils/format'
+
+import styles from './index.module.scss'
+
+const categories = ['全部', 'Logo', '参考图', '模特', '场景']
+const folders = ['全部素材', 'Logo', '参考图', '模特', '场景', '品牌库']
 
 export function AssetsPage() {
-  const { data: assets = [] } = useQuery({ queryKey: ['assets'], queryFn: mockService.getAssets })
+  const { data: assets = [] } = useQuery({
+    queryKey: ['assets'],
+    queryFn: frontendApi.getAssets,
+  })
+  const { data: models = [] } = useQuery({
+    queryKey: ['models'],
+    queryFn: frontendApi.getWorkbenchModels,
+  })
+  const { data: scenes = [] } = useQuery({
+    queryKey: ['scenes'],
+    queryFn: frontendApi.getWorkbenchScenes,
+  })
+
+  const [folder, setFolder] = useState('全部素材')
+  const [category, setCategory] = useState('全部')
+
+  const filtered = useMemo(() => {
+    return assets.filter((asset) => {
+      const matchFolder =
+        folder === '全部素材' ||
+        (folder === 'Logo' && asset.category.includes('Logo')) ||
+        asset.category.includes(folder.replace('全部', ''))
+      const matchCategory = category === '全部' || asset.category.includes(category)
+      return matchFolder && matchCategory
+    })
+  }, [assets, category, folder])
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="素材管理"
-        description="围绕上传、文件夹、标签、收藏、搜索和分类建立企业素材库。"
-        breadcrumb={['工作台', '素材管理']}
-        extra={<Button type="primary">新建文件夹</Button>}
-      />
-      <FilterBar />
-      <Grid.Row gutter={[16, 16]}>
-        <Grid.Col xs={24} xl={7}>
-          <UploadCard title="上传新素材" description="支持图片拖拽上传、批量入库和标签化管理。" />
-        </Grid.Col>
-        <Grid.Col xs={24} xl={17}>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {assets.map((asset) => (
-              <Card
-                key={asset.id}
-                bordered={false}
-                className="soft-card overflow-hidden"
-                cover={
-                  <img alt={asset.name} className="aspect-[4/3] object-cover" src={asset.cover} />
-                }
-              >
-                <Typography.Title heading={6}>{asset.name}</Typography.Title>
-                <Typography.Paragraph className="text-muted">{asset.category}</Typography.Paragraph>
-                <div className="flex flex-wrap gap-2">
+    <div className={styles.page}>
+      <aside className={styles.folderSidebar}>
+        <div className={styles.folderTitle}>文件夹</div>
+        {folders.map((item) => (
+          <button
+            key={item}
+            type="button"
+            className={`${styles.folderItem}${folder === item ? ` ${styles.folderItemActive}` : ''}`}
+            onClick={() => setFolder(item)}
+          >
+            {item}
+          </button>
+        ))}
+      </aside>
+
+      <div className={styles.main}>
+        <div className={styles.header}>
+          <h1>素材管理</h1>
+          <Button type="primary">新建文件夹</Button>
+        </div>
+
+        <div className={styles.categoryTabs}>
+          {categories.map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={`${styles.categoryTab}${category === item ? ` ${styles.categoryTabActive}` : ''}`}
+              onClick={() => setCategory(item)}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+        <div className={styles.uploadCard}>
+          <IconUpload />
+          <span>上传 Logo、参考图、品牌素材，支持拖拽与批量入库。</span>
+        </div>
+
+        <div className={styles.assetGrid}>
+          {filtered.map((asset) => (
+            <article key={asset.id} className={styles.assetCard}>
+              <img src={asset.cover} alt={asset.name} />
+              <div className={styles.assetBody}>
+                <h3>{asset.name}</h3>
+                <p>
+                  {asset.category} · {formatDateTime(asset.updatedAt)}
+                </p>
+                <div className={styles.tags}>
                   {asset.tags.map((tag) => (
-                    <Tag key={tag}>{tag}</Tag>
+                    <span key={tag} className={styles.tag}>
+                      {tag}
+                    </span>
                   ))}
+                  {asset.favorite ? <span className={styles.tag}>已收藏</span> : null}
                 </div>
-              </Card>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <section className={styles.favoriteSection}>
+          <h2>常用收藏</h2>
+          <div className={styles.favoriteGrid}>
+            {models.slice(0, 3).map((model) => (
+              <article key={model.id} className={styles.favoriteCard}>
+                <img src={model.avatar} alt={model.name} />
+                <span>我的模特 · {model.name}</span>
+              </article>
+            ))}
+            {scenes.slice(0, 2).map((scene) => (
+              <article key={scene.id} className={styles.favoriteCard}>
+                <img src={scene.image} alt={scene.name} />
+                <span>我的场景 · {scene.name}</span>
+              </article>
             ))}
           </div>
-        </Grid.Col>
-      </Grid.Row>
+        </section>
+      </div>
     </div>
   )
 }

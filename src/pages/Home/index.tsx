@@ -1,286 +1,308 @@
-import { Button, Collapse } from '@arco-design/web-react'
-import { IconCustomerService, IconRight } from '@arco-design/web-react/icon'
-import { useQuery } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router-dom'
+import { Button, Input, Progress } from '@arco-design/web-react'
+import { IconArrowRight, IconRight, IconStarFill } from '@arco-design/web-react/icon'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import heroComposite from '@/assets/img/hero-composite.png'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
-import { mockPlans } from '@/mock/data'
-import { mockService } from '@/services/mockService'
 
+import {
+  caseTabs,
+  enterpriseTasks,
+  galleryItems,
+  galleryTabs,
+  heroBackground,
+  heroContent,
+  mainFeatures,
+  quickEntries,
+  showcaseCase,
+  testimonials,
+  toolEntries,
+} from './data'
 import './home.scss'
-
-const faqs = [
-  {
-    q: '生成的图片可以商用吗？',
-    a: '可以。平台生成的商拍图支持电商详情、广告投放等商用场景，具体授权范围以套餐说明为准。',
-  },
-  {
-    q: '支持哪些服装类型？',
-    a: '支持上装、下装、连衣裙、外套等常见品类，也支持配饰与鞋靴类素材生成。',
-  },
-  {
-    q: '生成一张图需要多久？',
-    a: '标准分辨率下单张约 30 秒至 2 分钟，批量任务会进入优先队列处理。',
-  },
-  { q: '如何联系客服？', a: '可通过「立即咨询」入口或企业版专属成功团队获取一对一支持。' },
-  {
-    q: '可以批量生成吗？',
-    a: '可以。上传多张服装图后可批量生成商拍图，高级套餐支持优先队列加速。',
-  },
-]
-
-const featureSymbols = ['▣', '✎', '▶', '✉', '☆']
-
-const statSymbols: Record<string, string> = {
-  shop: '♕',
-  image: '▣',
-  rise: '↗',
-  thunder: '⚡',
-  clock: '⏱',
-  fall: '◎',
-}
-
-const planCreditHint: Record<string, string> = {
-  starter: '20 积分',
-  basic: '200 积分/月',
-  advanced: '800 积分/月',
-  pro: '2000 积分/月',
-  enterprise: '专属服务',
-}
 
 export function HomePage() {
   const navigate = useNavigate()
   const { guard } = useAuthGuard()
-  const { data } = useQuery({ queryKey: ['home-config'], queryFn: mockService.getHomeConfig })
+  const [caseTab, setCaseTab] = useState(caseTabs[1])
+  const [galleryTab, setGalleryTab] = useState(galleryTabs[0])
+  const [ctaInput, setCtaInput] = useState('')
 
-  const heroTitle = data?.heroTitle ?? '3 步生成专业商拍大片'
-  const heroNumber = heroTitle.match(/^(\d+)/)?.[1] ?? '3'
-  const heroTitleRest = heroTitle.replace(/^\d+\s*/, '')
+  const filteredGallery = useMemo(
+    () => galleryItems.filter((item) => item.category === galleryTab),
+    [galleryTab],
+  )
+
+  useEffect(() => {
+    const hash = window.location.hash
+    if (!hash) return
+    const timer = window.setTimeout(() => {
+      document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' })
+    }, 80)
+    return () => window.clearTimeout(timer)
+  }, [])
 
   return (
     <div className="home-page">
-      <section className="ps-hero">
-        <div className="ps-container ps-hero__inner">
-          <div className="ps-hero__copy">
-            <div className="ps-pill">✦ {data?.heroBadge}</div>
-            <h1 className="ps-hero__title">
-              <span className="ps-hero__num">{heroNumber}</span>
-              {heroTitleRest}
-            </h1>
-            <p className="ps-hero__sub">{data?.heroSubtitle}</p>
-            <div className="ps-hero__points">
-              {(data?.heroHighlights ?? []).map((item) => (
-                <span key={item}>
-                  <i className="ps-check">✓</i>
-                  {item}
-                </span>
-              ))}
-            </div>
-            <div className="ps-hero__actions">
-              <Button type="primary" size="large" onClick={() => guard('/ai-generate')}>
-                立即生成
-                <IconRight />
-              </Button>
-              <Button
-                size="large"
-                type="outline"
-                icon={<IconCustomerService />}
-                onClick={() => navigate('/delivery')}
-                className="ps-hero__consult-btn"
-              >
-                立即咨询
-              </Button>
-            </div>
+      <section className="home-hero">
+        <div className="home-hero__bg" style={{ backgroundImage: `url(${heroBackground})` }} />
+        <div className="home-hero__mask" />
+        <div className="home-container home-hero__inner">
+          <h1 className="home-hero__title">{heroContent.title}</h1>
+          <p className="home-hero__subtitle">{heroContent.subtitle}</p>
+        </div>
+      </section>
+
+      <section className="home-quick">
+        <div className="home-container home-quick__grid">
+          {quickEntries.map((item) => (
+            <article
+              key={item.id}
+              className={`home-quick-card home-quick-card--${item.variant}`}
+            >
+              <div className="home-quick-card__body">
+                <h3>{item.title}</h3>
+                <p>{item.desc}</p>
+                <button
+                  type="button"
+                  className="home-link-btn"
+                  onClick={() => guard(item.path)}
+                >
+                  {item.cta}
+                  <IconArrowRight />
+                </button>
+              </div>
+              <div className="home-quick-card__media">
+                <img src={item.image} alt="" loading="lazy" />
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="home-section" id="features">
+        <div className="home-container">
+          <div className="home-section-head">
+            <h2>全链路 AI 商拍图生成</h2>
+            <p>从试衣、精修到批量出图，覆盖服装电商内容生产全流程</p>
           </div>
-          <div className="ps-hero__visual" aria-hidden="true">
-            <img className="ps-hero__composite" alt="" src={heroComposite} />
+          <div className="home-feature-grid">
+            {mainFeatures.map((feature) => (
+              <article
+                key={feature.title}
+                className="home-feature-card"
+                role="button"
+                tabIndex={0}
+                onClick={() => guard(feature.path)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') guard(feature.path)
+                }}
+              >
+                <div className="home-feature-card__image">
+                  <img src={feature.image} alt={feature.title} loading="lazy" />
+                </div>
+                <div className="home-feature-card__content">
+                  <h3>{feature.title}</h3>
+                  <p>{feature.desc}</p>
+                  <span className="home-feature-card__link">
+                    了解更多
+                    <IconRight />
+                  </span>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="home-tool-grid">
+            {toolEntries.map((tool) => (
+              <button
+                key={tool.title}
+                type="button"
+                className="home-tool-card"
+                onClick={() => guard(tool.path)}
+              >
+                <div className="home-tool-card__icon">
+                  <img src={`https://picsum.photos/seed/${tool.seed}/80/80`} alt="" />
+                </div>
+                <span>{tool.title}</span>
+              </button>
+            ))}
           </div>
         </div>
       </section>
 
-      <div className="ps-main">
-        <div className="ps-brand-strip">
-          <div className="ps-container">
-            <h2 className="ps-section-title">500+ KA 品牌的共同选择</h2>
-            <div className="ps-brand-list">
-              {(data?.brands ?? []).map((brand) => (
-                <div
-                  key={brand.name}
-                  className={`ps-brand${brand.enName === 'INMAN' ? ' ps-brand--accent' : ''}`}
-                >
-                  {brand.enName ?? brand.name}
-                  <small>{brand.name}</small>
+      <section className="home-section home-section--muted" id="cases">
+        <div className="home-container">
+          <div className="home-section-head">
+            <h2>真实成片交付案例</h2>
+            <p>来自真实品牌场景的数据验证与业务价值</p>
+          </div>
+          <div className="home-tabs">
+            {caseTabs.map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                className={`home-tab${caseTab === tab ? ' home-tab--active' : ''}`}
+                onClick={() => setCaseTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+          <article className="home-case-card">
+            <div className="home-case-card__media">
+              <img src={showcaseCase.image} alt={showcaseCase.title} loading="lazy" />
+            </div>
+            <div className="home-case-card__content">
+              <h3>{showcaseCase.title}</h3>
+              <p>{showcaseCase.desc}</p>
+              <div className="home-case-card__stats">
+                {showcaseCase.stats.map((stat) => (
+                  <div key={stat.label} className="home-stat-pill">
+                    <strong>{stat.value}</strong>
+                    <span>{stat.label}</span>
+                  </div>
+                ))}
+              </div>
+              <Button type="primary" size="large" onClick={() => navigate('/delivery')}>
+                {showcaseCase.cta}
+              </Button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="home-enterprise">
+        <div className="home-container home-enterprise__inner">
+          <div className="home-enterprise__copy">
+            <span className="home-enterprise__label">企业版能力</span>
+            <h2>企业级批量化出图 重塑生产力边界</h2>
+            <ul>
+              <li>支持多账号协作与权限管理</li>
+              <li>批量任务队列与优先加速通道</li>
+              <li>API 对接与私有化部署可选</li>
+              <li>专属客户成功团队全程跟进</li>
+            </ul>
+            <Button type="primary" size="large" onClick={() => navigate('/enterprise')}>
+              了解企业版
+              <IconRight />
+            </Button>
+          </div>
+          <div className="home-enterprise__panel">
+            <div className="home-enterprise__panel-head">
+              <span>生成任务面板</span>
+              <span className="home-enterprise__panel-badge">实时同步</span>
+            </div>
+            <div className="home-enterprise__summary">
+              <div>
+                <strong>128</strong>
+                <span>今日任务</span>
+              </div>
+              <div>
+                <strong>96.8%</strong>
+                <span>成功率</span>
+              </div>
+              <div>
+                <strong>2.4min</strong>
+                <span>平均耗时</span>
+              </div>
+            </div>
+            <div className="home-enterprise__tasks">
+              {enterpriseTasks.map((task) => (
+                <div key={task.name} className="home-task-row">
+                  <div className="home-task-row__meta">
+                    <span>{task.name}</span>
+                    <span className={`home-task-status home-task-status--${task.statusType}`}>
+                      {task.status}
+                    </span>
+                  </div>
+                  <Progress
+                    percent={task.progress}
+                    showText={false}
+                    color="#1677ff"
+                    trailColor="rgba(255,255,255,0.08)"
+                  />
                 </div>
               ))}
             </div>
           </div>
         </div>
+      </section>
 
-        <section id="features" className="ps-section">
-          <div className="ps-container">
-            <div className="ps-section-head">
-              <h2>核心功能</h2>
-              <p>一站式 AI 商拍解决方案，满足您的所有需求</p>
-            </div>
-            <div className="ps-feature-grid">
-              {(data?.features ?? []).map((feature, index) => (
-                <article key={feature.title} className="ps-feature-card">
-                  <div>
-                    <div className="ps-feature-icon">{featureSymbols[index] ?? '▣'}</div>
-                    <h3>{feature.title}</h3>
-                    <p>{feature.description}</p>
-                    <button
-                      type="button"
-                      className="ps-feature-link"
-                      onClick={() => {
-                        if (feature.path) {
-                          guard(feature.path)
-                        }
-                      }}
-                    >
-                      {feature.path === '/delivery' ? '立即咨询 →' : '立即使用 →'}
-                    </button>
-                  </div>
-                  <div className="ps-feature-image">
-                    {feature.cover ? <img alt={feature.title} src={feature.cover} /> : null}
-                  </div>
-                </article>
-              ))}
-            </div>
-            <div className="ps-stats-bar">
-              {(data?.stats ?? []).map((item) => (
-                <div key={item.label} className="ps-stat">
-                  <div className="ps-stat-icon">{statSymbols[item.icon ?? 'shop'] ?? '♕'}</div>
-                  <div>
-                    <strong>{item.value}</strong>
-                    <span>{item.label}</span>
-                  </div>
+      <section className="home-section">
+        <div className="home-container">
+          <div className="home-section-head">
+            <h2>用户评价</h2>
+            <p>来自服装电商、品牌方与内容团队的真实反馈</p>
+          </div>
+          <div className="home-review-grid">
+            {testimonials.map((item) => (
+              <article key={item.name} className="home-review-card">
+                <div className="home-review-card__stars">
+                  {Array.from({ length: item.rating }).map((_, i) => (
+                    <IconStarFill key={String(i)} />
+                  ))}
                 </div>
-              ))}
-            </div>
+                <p>{item.content}</p>
+                <footer>
+                  <img src={item.avatar} alt="" />
+                  <div>
+                    <strong>{item.name}</strong>
+                    <span>{item.role}</span>
+                  </div>
+                </footer>
+              </article>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="ps-section">
-          <div className="ps-container">
-            <div className="ps-section-head">
-              <h2>成功案例</h2>
-              <p>真实品牌数据，验证 AI 商拍业务价值</p>
-            </div>
-            <div className="ps-cases">
-              {(data?.cases ?? []).map((item) => (
-                <article key={item.id} className="ps-case-card">
-                  <img alt={item.brand} src={item.cover} />
-                </article>
-              ))}
-            </div>
-            <div className="ps-cases-more">
-              <Button type="outline" onClick={() => guard('/projects')}>
-                查看更多
-              </Button>
-            </div>
+      <section className="home-section home-section--gallery">
+        <div className="home-container">
+          <div className="home-section-head">
+            <h2>优秀案例</h2>
+            <p>覆盖女装、男装、童装与配饰等多品类商拍场景</p>
           </div>
-        </section>
-
-        <section id="pricing" className="ps-section ps-pricing-section">
-          <div className="ps-container ps-pricing-band">
-            <aside className="ps-dark-panel">
-              <h3>新人专享体验</h3>
-              <p>免费体验 20 积分</p>
-              <ul>
-                <li>体验所有核心功能</li>
-                <li>生成高清商拍效果图</li>
-              </ul>
-              <Button type="primary" long onClick={() => navigate('/pricing')}>
-                立即领取
-              </Button>
-            </aside>
-
-            <div className="ps-plans-box">
-              <div className="ps-plans-head">
-                <div>
-                  <h3>选择适合您的套餐</h3>
-                  <p>多种套餐选择，满足不同需求</p>
+          <div className="home-tabs">
+            {galleryTabs.map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                className={`home-tab${galleryTab === tab ? ' home-tab--active' : ''}`}
+                onClick={() => setGalleryTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+          <div className="home-gallery-grid">
+            {filteredGallery.map((item) => (
+              <article key={item.id} className="home-gallery-card">
+                <img src={item.image} alt="" loading="lazy" />
+                <div className="home-gallery-card__badge">
+                  <img src={item.thumb} alt="" />
+                  <span>输入素材</span>
                 </div>
-                <Button type="primary" onClick={() => navigate('/pricing')}>
-                  查看详情
-                  <IconRight />
-                </Button>
-              </div>
-              <div className="ps-plans">
-                {mockPlans.map((plan) => (
-                  <article
-                    key={plan.id}
-                    className="ps-plan"
-                    role="button"
-                    tabIndex={0}
-                    onClick={() =>
-                      plan.id === 'enterprise' ? navigate('/enterprise') : navigate('/pricing')
-                    }
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        if (plan.id === 'enterprise') {
-                          navigate('/enterprise')
-                        } else {
-                          navigate('/pricing')
-                        }
-                      }
-                    }}
-                  >
-                    <h4>{plan.name}</h4>
-                    <div className="ps-price">
-                      {plan.id === 'enterprise' ? (
-                        '定制报价'
-                      ) : plan.monthlyPrice === 0 ? (
-                        <>
-                          ¥0<small> 起</small>
-                        </>
-                      ) : (
-                        <>
-                          ¥{plan.monthlyPrice}
-                          <small>/月</small>
-                        </>
-                      )}
-                    </div>
-                    <p>{planCreditHint[plan.id] ?? plan.features[0]}</p>
-                  </article>
-                ))}
-              </div>
-            </div>
-
-            <aside className="ps-dark-panel">
-              <h3>企业合作</h3>
-              <p>定制化方案，专属服务团队</p>
-              <ul>
-                <li>API 接口对接</li>
-                <li>私有化部署</li>
-              </ul>
-              <Button type="primary" long onClick={() => navigate('/enterprise')}>
-                联系我们
-              </Button>
-            </aside>
+              </article>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="ps-section ps-faq" id="faq">
-          <div className="ps-container">
-            <div className="ps-section-head">
-              <h2>常见问题</h2>
-            </div>
-            <Collapse bordered={false} expandIconPosition="right" className="ps-faq-collapse">
-              {faqs.map((item, index) => (
-                <Collapse.Item key={String(index)} name={String(index)} header={item.q}>
-                  {item.a}
-                </Collapse.Item>
-              ))}
-            </Collapse>
-            <Link to="/delivery" className="ps-more-link">
-              更多问题 →
-            </Link>
+      <section className="home-cta">
+        <div className="home-container home-cta__inner">
+          <h2>AI 生图，秒出大片！让爆单快人一步！</h2>
+          <div className="home-cta__form">
+            <Input
+              size="large"
+              placeholder="输入您的商拍需求，例如：夏季连衣裙主图批量生成"
+              value={ctaInput}
+              onChange={setCtaInput}
+            />
+            <Button type="primary" size="large" onClick={() => guard('/ai-generate')}>
+              立即体验
+            </Button>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   )
 }

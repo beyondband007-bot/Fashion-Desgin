@@ -1,28 +1,75 @@
-import { Button, Radio, Typography } from '@arco-design/web-react'
+import { Button, Radio } from '@arco-design/web-react'
 import { useQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
 
-import { PageHeader } from '@/components/common/PageHeader'
+import { frontendApi } from '@/api/frontend'
 import { PlanCard } from '@/components/common/PlanCard'
-import { mockService } from '@/services/mockService'
+import { useCreditStore } from '@/store/creditStore'
 import { usePricingStore } from '@/store/pricingStore'
 import type { PlanBillingCycle } from '@/types/business'
+import { formatCredit, formatDate } from '@/utils/format'
+
+import styles from './index.module.scss'
+
+const rechargeOptions = [
+  { credits: 200, price: '楼39' },
+  { credits: 500, price: '楼89' },
+  { credits: 1000, price: '楼169' },
+  { credits: 3000, price: '楼459' },
+]
 
 export function PricingPage() {
-  const { data: plans = [] } = useQuery({ queryKey: ['plans'], queryFn: mockService.getPlans })
+  const { data: plans = [] } = useQuery({ queryKey: ['plans'], queryFn: frontendApi.getPlans })
   const { billingCycle, setBillingCycle } = usePricingStore()
+  const balance = useCreditStore((state) => state.balance)
+
+  const currentPlan =
+    plans.find((plan) => plan.id === 'advanced') ?? plans.find((plan) => plan.id !== 'enterprise')
+  const currentPlanExpiresAt = dayjs().add(18, 'day').toISOString()
+  const currentPlanConcurrency =
+    currentPlan?.id === 'pro' ? 8 : currentPlan?.id === 'advanced' ? 4 : currentPlan ? 1 : 0
+  const daysLeft = currentPlan ? dayjs(currentPlanExpiresAt).diff(dayjs(), 'day') : 0
 
   return (
-    <div className="page-section space-y-6 py-10">
-      <PageHeader
-        title="套餐中心"
-        description="支持新人体验、基础会员、高级会员、专业会员与企业版，并提供月付 / 年付切换。"
-        breadcrumb={['商业化', '套餐中心']}
-        extra={<Button type="primary">进入积分充值</Button>}
-      />
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <Typography.Paragraph className="text-muted" style={{ marginBottom: 0 }}>
-          推荐先从 MVP 方案验证业务价值，再按团队规模升级。
-        </Typography.Paragraph>
+    <div className={styles.page}>
+      {currentPlan ? (
+        <>
+          <section className={styles.currentPlan}>
+            <div>
+              <h2>当前套餐 · {currentPlan.name}</h2>
+              <p>
+                有效期至 {formatDate(currentPlanExpiresAt)} ·{' '}
+                {billingCycle === 'monthly' ? '月付' : '年付'}
+              </p>
+            </div>
+            <div className={styles.planMeta}>
+              <div>
+                <span>剩余积分</span>
+                <strong>{formatCredit(balance)}</strong>
+              </div>
+              <div>
+                <span>并发上限</span>
+                <strong>{currentPlanConcurrency} 组</strong>
+              </div>
+            </div>
+            <Button type="primary">续费套餐</Button>
+          </section>
+          {daysLeft <= 30 ? (
+            <div className={styles.expireBanner}>
+              <span>当前套餐将在 {daysLeft} 天后到期，建议提前续费避免影响批量任务。</span>
+              <Button type="outline" size="small">
+                立即续费
+              </Button>
+            </div>
+          ) : null}
+        </>
+      ) : null}
+
+      <div className={styles.headerRow}>
+        <div>
+          <h1>套餐 / 积分</h1>
+          <p>支持基础版、高级版、专业版、企业版对比，并保留按量充值入口。</p>
+        </div>
         <Radio.Group
           type="button"
           value={billingCycle}
@@ -32,11 +79,24 @@ export function PricingPage() {
           <Radio value="yearly">年付</Radio>
         </Radio.Group>
       </div>
-      <div className="grid gap-6 xl:grid-cols-5">
+
+      <div className={styles.planGrid}>
         {plans.map((plan) => (
           <PlanCard key={plan.id} billingCycle={billingCycle} plan={plan} />
         ))}
       </div>
+
+      <section className={styles.rechargeSection}>
+        <h2>积分充值</h2>
+        <div className={styles.rechargeGrid}>
+          {rechargeOptions.map((item) => (
+            <button key={item.credits} type="button" className={styles.rechargeCard}>
+              <strong>{item.credits}</strong>
+              <span>{item.price}</span>
+            </button>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }

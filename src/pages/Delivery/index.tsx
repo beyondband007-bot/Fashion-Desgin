@@ -1,73 +1,151 @@
-import { Button, Card, Form, Grid, Input, Space, Typography } from '@arco-design/web-react'
+import { Button } from '@arco-design/web-react'
+import { IconRight } from '@arco-design/web-react/icon'
+import { useState } from 'react'
 
-import { PageHeader } from '@/components/common/PageHeader'
+import {
+  deliveryAboutPoints,
+  deliveryHero,
+  deliveryOffices,
+  deliverySolutions,
+} from '@/mock/delivery'
+
+import styles from './index.module.scss'
+
+const hqOffice = deliveryOffices.find((o) => o.isHQ) ?? deliveryOffices[0]!
 
 export function DeliveryPage() {
-  return (
-    <div className="page-section space-y-6 py-10">
-      <PageHeader
-        title="成片交付"
-        description="围绕需求收集、案例展示、联系方式和在线咨询构建人工服务入口。"
-        breadcrumb={['服务', '成片交付']}
-      />
+  const [activeOffice, setActiveOffice] = useState(hqOffice.id)
+  const office = deliveryOffices.find((o) => o.id === activeOffice) ?? hqOffice
 
-      <Grid.Row gutter={[16, 16]}>
-        <Grid.Col xs={24} xl={14}>
-          <div className="space-y-6">
-            <Card bordered={false} className="soft-card">
-              <Typography.Title heading={5}>服务介绍</Typography.Title>
-              <Typography.Paragraph className="text-muted">
-                提供从服装拍摄策划、内容产出到品牌视觉交付的一站式服务，适合需要高质感成片的品牌营销团队。
-              </Typography.Paragraph>
-              <div className="grid gap-4 md:grid-cols-3">
-                {['48 小时内响应', '专属项目经理', '交付流程可追踪'].map((item) => (
-                  <div key={item} className="rounded-2xl bg-[var(--bg-tertiary)] p-4">
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </Card>
-            <Card bordered={false} className="soft-card">
-              <Typography.Title heading={5}>案例展示</Typography.Title>
-              <div className="grid gap-4 md:grid-cols-2">
-                {['lookbook', 'campaign'].map((seed) => (
-                  <img
-                    key={seed}
-                    alt={seed}
-                    className="aspect-[4/3] rounded-2xl object-cover"
-                    src={`https://picsum.photos/seed/${seed}/960/720`}
-                  />
-                ))}
-              </div>
-            </Card>
+  return (
+    <div className={styles.page}>
+      {/* Hero */}
+      <section className={styles.hero}>
+        <div className={styles.heroInner}>
+          <div className={styles.heroCopy}>
+            <div className={styles.qrBlock}>
+              <div className={styles.qrBox} aria-hidden />
+              <span>扫码关注</span>
+            </div>
+            <h1>{deliveryHero.title}</h1>
+            <p>{deliveryHero.description}</p>
+            <Button type="primary" size="large" icon={<IconRight />}>
+              立即咨询
+            </Button>
           </div>
-        </Grid.Col>
-        <Grid.Col xs={24} xl={10}>
-          <Card bordered={false} className="soft-card">
-            <Typography.Title heading={5}>需求表单</Typography.Title>
-            <Form layout="vertical">
-              <Form.Item label="公司 / 品牌名称">
-                <Input placeholder="请输入品牌或公司名称" />
-              </Form.Item>
-              <Form.Item label="联系人">
-                <Input placeholder="请输入联系人姓名" />
-              </Form.Item>
-              <Form.Item label="联系方式">
-                <Input placeholder="请输入手机号 / 微信 / 邮箱" />
-              </Form.Item>
-              <Form.Item label="需求说明">
-                <Input.TextArea placeholder="请描述服装品类、期望风格、周期和交付要求" rows={6} />
-              </Form.Item>
-              <Space direction="vertical" style={{ width: '100%' }}>
-                <Button type="primary" long>
-                  提交需求
-                </Button>
-                <Button long>在线咨询</Button>
-              </Space>
-            </Form>
-          </Card>
-        </Grid.Col>
-      </Grid.Row>
+          <div className={styles.heroVisual} aria-hidden>
+            <div className={styles.visualGlow} />
+            <div className={styles.visualWindow}>
+              <div className={styles.visualToolbar}>
+                <span />
+                <span />
+                <span />
+              </div>
+              <div className={styles.visualBody}>
+                <div className={styles.visualCompare}>
+                  <img
+                    src="https://picsum.photos/seed/delivery-before/200/260"
+                    alt=""
+                    className={styles.visualBefore}
+                  />
+                  <img
+                    src="https://picsum.photos/seed/delivery-after/200/260"
+                    alt=""
+                    className={styles.visualAfter}
+                  />
+                </div>
+                <div className={styles.visualAction}>
+                  <span className={styles.visualCursor} />
+                  智能抠图优化
+                </div>
+              </div>
+            </div>
+            <div className={styles.floatingIcon} style={{ top: '12%', left: '8%' }}>
+              ◎
+            </div>
+            <div className={styles.floatingIcon} style={{ top: '20%', right: '6%' }}>
+              ✦
+            </div>
+            <div className={styles.floatingIcon} style={{ bottom: '18%', left: '4%' }}>
+              ▣
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Solutions */}
+      <section className={styles.solutions}>
+        <div className={styles.container}>
+          <h2 className={styles.sectionTitle}>成片交付服务</h2>
+          <p className={styles.sectionDesc}>按品类提供专业化视觉交付方案，48 小时极速出片</p>
+          <div className={styles.solutionGrid}>
+            {deliverySolutions.map((item) => (
+              <article key={item.id} className={styles.solutionCard}>
+                <img src={item.cover} alt={item.title} />
+                <div className={styles.solutionBody}>
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                  <button type="button" className={styles.solutionLink}>
+                    了解详情
+                    <IconRight />
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* About */}
+      <section className={styles.about}>
+        <div className={styles.container}>
+          <h2 className={styles.sectionTitle}>关于我们</h2>
+          <ul className={styles.aboutList}>
+            {deliveryAboutPoints.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Offices */}
+      <section className={styles.offices}>
+        <div className={styles.container}>
+          <h2 className={styles.sectionTitle}>区域办公室</h2>
+          <div className={styles.officeLayout}>
+            <div className={styles.mapWrap}>
+              <div className={styles.mapBg} />
+              {deliveryOffices.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`${styles.mapDot}${item.id === activeOffice ? ` ${styles.mapDotActive}` : ''}${item.isHQ ? ` ${styles.mapDotHq}` : ''}`}
+                  style={{ left: `${item.x}%`, top: `${item.y}%` }}
+                  title={item.city}
+                  onClick={() => setActiveOffice(item.id)}
+                />
+              ))}
+            </div>
+            <aside className={styles.officeCard}>
+              <h3>{office.city}</h3>
+              <p>{office.address}</p>
+              {office.phone ? (
+                <p>
+                  <strong>电话</strong> {office.phone}
+                </p>
+              ) : null}
+              {office.email ? (
+                <p>
+                  <strong>邮箱</strong> {office.email}
+                </p>
+              ) : null}
+              <Button type="primary" long>
+                联系当地团队
+              </Button>
+            </aside>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

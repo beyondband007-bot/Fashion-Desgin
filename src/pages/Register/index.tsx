@@ -1,35 +1,58 @@
-import { Button, Card, Checkbox, Form, Input, Progress, Typography } from '@arco-design/web-react'
+import { Button, Checkbox, Form, Input, Progress } from '@arco-design/web-react'
+import { useNavigate } from 'react-router-dom'
+
+import loginStyles from '../Login/index.module.scss'
+import styles from './index.module.scss'
 
 export function RegisterPage() {
+  const navigate = useNavigate()
+
   return (
-    <div className="page-section flex min-h-[calc(100vh-180px)] items-center justify-center py-10">
-      <Card bordered={false} className="soft-card w-full max-w-lg p-2">
-        <Typography.Title heading={3}>注册账号</Typography.Title>
-        <Typography.Paragraph className="text-muted">
-          支持验证码注册、协议勾选、密码强度检测和后续企业升级。
-        </Typography.Paragraph>
-        <Form layout="vertical">
-          <Form.Item label="手机号" required>
-            <Input placeholder="请输入手机号" />
-          </Form.Item>
-          <Form.Item label="验证码" required>
-            <Input placeholder="请输入验证码" />
-          </Form.Item>
-          <Form.Item label="密码" required>
-            <Input.Password placeholder="请输入 8-20 位密码" />
-          </Form.Item>
-          <div className="mb-4">
-            <div className="type-body-sm mb-2 text-[var(--text-secondary)]">密码强度</div>
-            <Progress percent={62} status="normal" />
+    <div className={loginStyles.page}>
+      <div className={`${loginStyles.shell} ${styles.registerShell}`}>
+        <section className={loginStyles.formPanel}>
+          <h2 className={loginStyles.formTitle}>注册账号</h2>
+          <p className={loginStyles.formDesc}>完成注册后自动赠送 10 张免费作图额度。</p>
+          <Form layout="vertical">
+            <Form.Item label="手机号" required>
+              <Input placeholder="请输入手机号" maxLength={11} />
+            </Form.Item>
+            <Form.Item
+              label="验证码"
+              required
+              extra={
+                <Button type="text" size="mini">
+                  获取验证码
+                </Button>
+              }
+            >
+              <Input placeholder="请输入 6 位验证码" maxLength={6} />
+            </Form.Item>
+            <Form.Item label="密码" required>
+              <Input.Password placeholder="8-20 位，需包含大小写字母和数字" />
+            </Form.Item>
+            <div className={styles.strengthBar}>
+              <span>密码强度</span>
+              <Progress percent={62} color="#3ccf91" />
+            </div>
+            <Form.Item label="用户名（选填）">
+              <Input placeholder="未填写则默认显示手机号后四位" />
+            </Form.Item>
+            <div className={styles.agreement}>
+              <Checkbox>我已阅读并同意用户协议与隐私政策</Checkbox>
+            </div>
+            <Button type="primary" long size="large">
+              注册并开始使用
+            </Button>
+            <div className={styles.benefit}>新人福利：注册成功赠送 10 张免费作图额度</div>
+          </Form>
+          <div className={loginStyles.footerLinks}>
+            <button type="button" onClick={() => navigate('/login')}>
+              已有账号，去登录
+            </button>
           </div>
-          <Form.Item>
-            <Checkbox>我已阅读并同意服务协议与隐私政策</Checkbox>
-          </Form.Item>
-          <Button type="primary" long>
-            注册并开始使用
-          </Button>
-        </Form>
-      </Card>
+        </section>
+      </div>
     </div>
   )
 }

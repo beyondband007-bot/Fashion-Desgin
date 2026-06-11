@@ -1,0 +1,250 @@
+.workbench {
+  display: flex;
+  height: calc(100vh - var(--header-height));
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.templateSidebar {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  background: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  overflow-y: auto;
+}
+
+.sidebarTitle {
+  padding: 0 8px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.categoryTabs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.categoryTab {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--bg-tertiary);
+  }
+}
+
+.categoryTabActive {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.templateGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.templateCard {
+  position: relative;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+  }
+
+  span {
+    display: block;
+    padding: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+}
+
+.templateCardActive {
+  border-color: var(--primary);
+}
+
+.templateTag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: #ff6b35;
+}
+
+.configPanel {
+  width: 360px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  overflow-y: auto;
+}
+
+.configBody {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.configBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.configLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.uploadZone {
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1.5px dashed rgba(0, 122, 255, 0.35);
+  border-radius: 10px;
+  background: rgba(0, 122, 255, 0.03);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.optionGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.optionBtn {
+  flex: 1;
+  min-width: calc(50% - 4px);
+  height: 36px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.optionBtnActive {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-soft);
+  font-weight: 600;
+}
+
+.configFooter {
+  padding: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.previewArea {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.previewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+}
+
+.resultGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.resultCard {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+
+  img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+  }
+
+  span {
+    display: block;
+    padding: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+}
+
+.emptyPreview {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--border-color);
+  border-radius: 14px;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  background: var(--card-bg);
+}
+
+@media (max-width: 1024px) {
+  .workbench {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+  }
+
+  .templateSidebar,
+  .configPanel {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+}

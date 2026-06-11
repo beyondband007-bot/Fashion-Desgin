@@ -1,0 +1,342 @@
+.workbench {
+  display: flex;
+  height: calc(100vh - var(--header-height));
+  overflow: hidden;
+  background: var(--toolbox-bg, var(--bg-primary));
+}
+
+.sidebar {
+  width: 168px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  background: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+}
+
+.sidebarNav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebarItem {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition-base);
+
+  &:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+}
+
+.sidebarItemActive {
+  background: var(--toolbox-sidebar-active-bg, rgba(0, 122, 255, 0.08));
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.sidebarItemIcon {
+  width: 18px;
+  display: flex;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.sidebarItemLabel {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarBadge {
+  flex-shrink: 0;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--header-badge-new-bg, #ff6b35);
+}
+
+.workspace {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: auto;
+  padding: 32px 24px;
+}
+
+.panel {
+  width: min(920px, 100%);
+  padding: 40px 48px 36px;
+  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.panelTitle {
+  margin: 0 0 28px;
+  text-align: center;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.panelActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.selectBtn {
+  min-width: 200px;
+  height: 44px !important;
+  border-radius: 10px !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  background: var(--card-bg) !important;
+  font-size: 14px !important;
+}
+
+.uploadBtn {
+  min-width: 160px;
+  height: 44px !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+}
+
+.panelHint {
+  margin: 20px 0 8px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.panelSpec {
+  margin: 0 0 32px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.examples {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.exampleCard {
+  padding: 20px;
+  border-radius: 14px;
+  background: var(--toolbox-example-bg, rgba(0, 122, 255, 0.04));
+  border: 1px solid var(--toolbox-example-border, rgba(0, 122, 255, 0.08));
+}
+
+.exampleType {
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--primary);
+  text-align: center;
+}
+
+.exampleCompare {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.exampleSide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.exampleLabel {
+  font-size: 11px;
+  line-height: 1;
+  color: var(--text-tertiary);
+}
+
+.exampleImage {
+  width: 100%;
+  max-width: 140px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+}
+
+.exampleImageBefore {
+  filter: brightness(0.82) contrast(0.9) saturate(0.78);
+}
+
+.exampleArrow {
+  flex-shrink: 0;
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.exampleCaption {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .workbench {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - var(--header-height));
+    overflow: visible;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-shrink: 0;
+    padding: 10px 12px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+  }
+
+  .sidebarNav {
+    flex-direction: row;
+    gap: 8px;
+    min-width: min-content;
+  }
+
+  .sidebarItem {
+    flex-shrink: 0;
+    width: auto;
+    padding: 8px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .sidebarItemLabel {
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .workspace {
+    flex: 1;
+    padding: 12px;
+    overflow: visible;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .panel {
+    width: 100%;
+    padding: 20px 16px;
+    box-sizing: border-box;
+    border-radius: 12px;
+  }
+
+  .panelTitle {
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+
+  .panelHint,
+  .panelSpec {
+    font-size: 12px;
+  }
+
+  .panelSpec {
+    margin-bottom: 24px;
+  }
+
+  .examples {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .exampleCard {
+    padding: 16px 14px;
+  }
+
+  .exampleType {
+    margin-bottom: 10px;
+    font-size: 11px;
+  }
+
+  .exampleCompare {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .exampleSide {
+    gap: 6px;
+  }
+
+  .exampleImage {
+    max-width: none;
+    border-radius: 8px;
+  }
+
+  .exampleArrow {
+    font-size: 18px;
+  }
+
+  .exampleCaption {
+    font-size: 12px;
+    padding: 0 4px;
+  }
+
+  .panelActions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .selectBtn,
+  .uploadBtn {
+    width: 100%;
+    min-width: 0;
+  }
+}

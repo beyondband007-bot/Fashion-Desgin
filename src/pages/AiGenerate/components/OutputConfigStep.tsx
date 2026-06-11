@@ -1,44 +1,6 @@
-import type {
-  OutputConfig,
-  OutputCount,
-  OutputPose,
-  OutputQuality,
-  OutputRatio,
-} from '@/types/generate'
+import type { OutputConfig, OutputQuality, OutputRatio } from '@/types/generate'
 
 import styles from '../index.module.scss'
-
-type OptionGroupProps<T extends string | number> = {
-  label: string
-  value: T
-  options: { value: T; label: string }[]
-  onChange: (value: T) => void
-}
-
-function OptionGroup<T extends string | number>({
-  label,
-  value,
-  options,
-  onChange,
-}: OptionGroupProps<T>) {
-  return (
-    <div className={styles.optionGroup}>
-      <span className={styles.optionLabel}>{label}</span>
-      <div className={styles.optionButtons}>
-        {options.map((opt) => (
-          <button
-            key={String(opt.value)}
-            type="button"
-            className={`${styles.optionBtn}${value === opt.value ? ` ${styles.optionBtnActive}` : ''}`}
-            onClick={() => onChange(opt.value)}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 type OutputConfigStepProps = {
   config: OutputConfig
@@ -48,16 +10,8 @@ type OutputConfigStepProps = {
 const ratioOptions: { value: OutputRatio; label: string }[] = [
   { value: '1:1', label: '1:1' },
   { value: '3:4', label: '3:4' },
-  { value: '4:3', label: '4:3' },
+  { value: '4:5', label: '4:5' },
   { value: '9:16', label: '9:16' },
-  { value: '16:9', label: '16:9' },
-]
-
-const poseOptions: { value: OutputPose; label: string }[] = [
-  { value: 'stand', label: '站姿' },
-  { value: 'sit', label: '坐姿' },
-  { value: 'walk', label: '走姿' },
-  { value: 'closeup', label: '特写' },
 ]
 
 const qualityOptions: { value: OutputQuality; label: string }[] = [
@@ -66,43 +20,37 @@ const qualityOptions: { value: OutputQuality; label: string }[] = [
   { value: 'uhd', label: '超清' },
 ]
 
-const countOptions: { value: OutputCount; label: string }[] = [
-  { value: 1, label: '1 张' },
-  { value: 2, label: '2 张' },
-  { value: 4, label: '4 张' },
-]
-
 export function OutputConfigStep({ config, onChange }: OutputConfigStepProps) {
   return (
-    <section className={styles.stepCard}>
-      <div className={styles.stepHead}>
-        <h3 className={styles.stepTitle}>4. 生成参数</h3>
+    <section className={styles.configSection}>
+      <div className={styles.configSectionTitle}>画面比例</div>
+      <div className={styles.toggleGroup}>
+        {ratioOptions.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            className={`${styles.toggleBtn}${config.ratio === opt.value ? ` ${styles.toggleBtnActive}` : ''}`}
+            onClick={() => onChange({ ...config, ratio: opt.value })}
+          >
+            {opt.label}
+          </button>
+        ))}
       </div>
-      <div className={styles.configGroups}>
-        <OptionGroup
-          label="输出比例"
-          value={config.ratio}
-          options={ratioOptions}
-          onChange={(ratio) => onChange({ ...config, ratio })}
-        />
-        <OptionGroup
-          label="姿态"
-          value={config.pose}
-          options={poseOptions}
-          onChange={(pose) => onChange({ ...config, pose })}
-        />
-        <OptionGroup
-          label="清晰度"
-          value={config.quality}
-          options={qualityOptions}
-          onChange={(quality) => onChange({ ...config, quality })}
-        />
-        <OptionGroup
-          label="生成数量"
-          value={config.count}
-          options={countOptions}
-          onChange={(count) => onChange({ ...config, count })}
-        />
+
+      <div className={styles.configSectionTitle} style={{ marginTop: 16 }}>
+        画质
+      </div>
+      <div className={styles.toggleGroup}>
+        {qualityOptions.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            className={`${styles.toggleBtn}${config.quality === opt.value ? ` ${styles.toggleBtnActive}` : ''}`}
+            onClick={() => onChange({ ...config, quality: opt.value })}
+          >
+            {opt.label}
+          </button>
+        ))}
       </div>
     </section>
   )

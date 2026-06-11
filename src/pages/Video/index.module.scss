@@ -1,0 +1,476 @@
+// AI 视频工作台 — 对齐 UI 稿
+
+.videoWorkbench {
+  display: flex;
+  height: calc(100vh - var(--header-height));
+  overflow: hidden;
+  background: #f7f8fa;
+}
+
+[data-theme='dark'] .videoWorkbench {
+  background: var(--bg-primary);
+}
+
+// ── 左侧子导航 ──
+.subSidebar {
+  width: 168px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+  background: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+}
+
+.subSidebarTitle {
+  padding: 4px 16px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.subNav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.subNavItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: 0.15s ease;
+
+  &:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+}
+
+.subNavItemActive {
+  background: rgba(0, 122, 255, 0.08);
+  color: var(--primary);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.subNavIcon {
+  display: flex;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.subNavLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+.memberBadge {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  font-style: normal;
+  color: #fff;
+  background: linear-gradient(135deg, #ff8a4c, #ff6b35);
+}
+
+.rechargeBtn {
+  margin: 12px 16px 8px;
+  padding: 8px 12px;
+  border: 1px solid #e8c547;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #fff9e6, #fff3cc);
+  color: #b8860b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #fff3cc;
+  }
+}
+
+// ── 中间配置区 ──
+.configPanel {
+  width: 400px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.configBlock {
+  padding: 16px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.configLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+
+  em {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--text-tertiary);
+    font-size: 12px;
+  }
+
+  svg {
+    color: var(--text-tertiary);
+    font-size: 14px;
+  }
+}
+
+.uploadZoneLarge {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 1.5px dashed rgba(0, 122, 255, 0.35);
+  border-radius: 10px;
+  background: rgba(0, 122, 255, 0.03);
+  cursor: pointer;
+  transition: 0.15s ease;
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  &:hover {
+    border-color: var(--primary);
+    background: rgba(0, 122, 255, 0.06);
+  }
+}
+
+.uploadFolderIcon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(0, 122, 255, 0.1);
+  color: var(--primary);
+  font-size: 28px;
+}
+
+.uploadZoneSmall {
+  height: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1.5px dashed var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-tertiary);
+  cursor: pointer;
+  transition: 0.15s ease;
+
+  p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+
+  &:hover {
+    border-color: var(--primary);
+  }
+}
+
+.uploadLink {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.previewBox {
+  position: relative;
+  height: 200px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.previewRemove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.videoPreview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  font-size: 13px;
+  color: var(--text-secondary);
+
+  button {
+    margin-left: auto;
+    border: none;
+    background: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 12px;
+  }
+}
+
+.segmentGroup {
+  width: 100%;
+
+  :global(.arco-radio-button) {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+  }
+}
+
+.promptInput {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+}
+
+.configFooter {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.generateBtn {
+  height: 48px !important;
+  border-radius: 10px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  background: var(--primary) !important;
+
+  &:disabled {
+    opacity: 0.45;
+    background: #c9cdd4 !important;
+  }
+}
+
+// ── 右侧展示区 ──
+.showcase {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 24px 28px 32px;
+  background: #f7f8fa;
+}
+
+[data-theme='dark'] .showcase {
+  background: var(--bg-primary);
+}
+
+.workflow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.workflowCard {
+  position: relative;
+  width: 200px;
+  text-align: center;
+
+  img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+  }
+
+  span {
+    display: block;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+}
+
+.workflowCardResult {
+  .sparkles {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #f5c518;
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+}
+
+.workflowArrow {
+  color: var(--text-tertiary);
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.casesSection {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.casesTitle {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.casesGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.caseCard {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.caseCover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.caseInset {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 36px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+// ── 响应式 ──
+@media (max-width: 1280px) {
+  .configPanel {
+    width: 360px;
+  }
+
+  .casesGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .videoWorkbench {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+  }
+
+  .subSidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 12px;
+    gap: 8px;
+    overflow-x: auto;
+  }
+
+  .subSidebarTitle {
+    display: none;
+  }
+
+  .subNav {
+    flex-direction: row;
+    flex: 1;
+  }
+
+  .rechargeBtn {
+    margin: 0;
+    flex-shrink: 0;
+  }
+
+  .configPanel {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .casesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .showcase {
+    padding: 16px;
+  }
+
+  .workflow {
+    flex-direction: column;
+  }
+
+  .workflowArrow {
+    transform: rotate(90deg);
+  }
+
+  .casesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhotoStudio AI - AI 在线生成工作台</title>
+  <style>
+    :root {
+      --primary: #7c5cff;
+      --primary-2: #5b8cff;
+      --primary-3: #efeaff;
+      --success: #35c98b;
+      --warning: #ffb84d;
+      --danger: #ff6b6b;
+
+      --bg: #f5f7fb;
+      --bg-soft: #f8faff;
+      --card: #ffffff;
+      --card-hover: #fbfcff;
+      --border: #e7ebf3;
+      --border-strong: #d9dfeb;
+
+      --text: #10172a;
+      --text-2: #526071;
+      --text-3: #8b95a7;
+
+      --shadow-sm: 0 8px 22px rgba(17, 24, 39, .05);
+      --shadow-md: 0 18px 48px rgba(17, 24, 39, .08);
+      --shadow-purple: 0 16px 34px rgba(124, 92, 255, .26);
+
+      --sidebar: 260px;
+      --header: 72px;
+
+      --font: Inter, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --bg: #090b14;
+      --bg-soft: #111827;
+      --card: #121826;
+      --card-hover: #182033;
+      --border: rgba(255, 255, 255, .08);
+      --border-strong: rgba(255, 255, 255, .14);
+
+      --text: #ffffff;
+      --text-2: #b5bdd1;
+      --text-3: #7d879d;
+
+      --shadow-sm: 0 8px 22px rgba(0, 0, 0, .22);
+      --shadow-md: 0 18px 48px rgba(0, 0, 0, .26);
+      --shadow-purple: 0 16px 34px rgba(124, 92, 255, .20);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      font-family: var(--font);
+      background:
+        radial-gradient(circle at 44% 0%, rgba(124, 92, 255, .10), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .app {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      height: var(--header);
+      display: grid;
+      grid-template-columns: var(--sidebar) 1fr auto;
+      align-items: center;
+      background: rgba(255, 255, 255, .82);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(18px);
+    }
+
+    [data-theme="dark"] .topbar {
+      background: rgba(9, 11, 20, .82);
+    }
+
+    .brand {
+      height: 100%;
+      padding: 0 26px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-right: 1px solid var(--border);
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: var(--shadow-purple);
+    }
+
+    .brand-name {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -.2px;
+      white-space: nowrap;
+    }
+
+    .topnav {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 34px;
+      padding: 0 38px;
+      color: var(--text-2);
+      font-size: 14px;
+      font-weight: 650;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .topnav a {
+      position: relative;
+      height: 100%;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .topnav a.active {
+      color: var(--primary);
+    }
+
+    .topnav a.active::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 36px;
+      height: 3px;
+      transform: translateX(-50%);
+      border-radius: 999px 999px 0 0;
+      background: var(--primary);
+    }
+
+    .top-actions {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 28px;
+    }
+
+    .circle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text-2);
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .credit-pill {
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 15px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: var(--shadow-sm);
+      white-space: nowrap;
+    }
+
+    .badge {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      background: var(--primary);
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #f6d1dc, #d9e4ff);
+      border: 2px solid var(--card);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .user-name {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: var(--sidebar) 1fr;
+      min-height: calc(100vh - var(--header));
+    }
+
+    .sidebar {
+      position: sticky;
+      top: var(--header);
+      height: calc(100vh - var(--header));
+      padding: 28px 20px;
+      background: rgba(255,255,255,.78);
+      border-right: 1px solid var(--border);
+      backdrop-filter: blur(18px);
+      overflow-y: auto;
+    }
+
+    [data-theme="dark"] .sidebar {
+      background: rgba(9, 11, 20, .72);
+    }
+
+    .sidebar-group {
+      margin-bottom: 28px;
+    }
+
+    .sidebar-title {
+      margin: 0 0 10px;
+      color: var(--text-3);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .side-menu {
+      display: grid;
+      gap: 8px;
+    }
+
+    .side-item {
+      height: 46px;
+      padding: 0 14px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-2);
+      font-size: 14px;
+      font-weight: 650;
+      border: 1px solid transparent;
+      transition: .18s ease;
+    }
+
+    .side-item:hover {
+      background: var(--card-hover);
+      color: var(--text);
+    }
+
+    .side-item.active {
+      color: var(--primary);
+      background: linear-gradient(135deg, rgba(124, 92, 255, .16), rgba(91, 140, 255, .10));
+      border-color: rgba(124, 92, 255, .16);
+      box-shadow: 0 12px 24px rgba(124, 92, 255, .08);
+    }
+
+    .side-icon {
+      width: 19px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .upgrade-card {
+      margin-top: 36px;
+      padding: 20px;
+      border-radius: 18px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 88% 12%, rgba(255,255,255,.22), transparent 28%),
+        linear-gradient(145deg, #7c5cff, #5b42f0);
+      box-shadow: var(--shadow-purple);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .upgrade-card::after {
+      content: "◇";
+      position: absolute;
+      right: 20px;
+      bottom: 18px;
+      font-size: 54px;
+      opacity: .26;
+      transform: rotate(-8deg);
+    }
+
+    .upgrade-card h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 800;
+    }
+
+    .upgrade-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 18px;
+      display: grid;
+      gap: 8px;
+      font-size: 13px;
+      color: rgba(255,255,255,.88);
+    }
+
+    .upgrade-card li::before {
+      content: "✓";
+      margin-right: 8px;
+      font-weight: 900;
+    }
+
+    .upgrade-card .white-btn {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 38px;
+      border: 0;
+      border-radius: 10px;
+      color: var(--primary);
+      background: #fff;
+      font-weight: 800;
+    }
+
+    .workspace {
+      padding: 26px 36px 34px;
+      min-width: 0;
+    }
+
+    .workspace-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+
+    .breadcrumbs {
+      margin-bottom: 10px;
+      color: var(--text-3);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .page-title {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 38px;
+      font-weight: 900;
+      letter-spacing: -.8px;
+    }
+
+    .page-desc {
+      margin: 0;
+      color: var(--text-2);
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .head-stats {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .mini-stat {
+      min-width: 92px;
+      text-align: right;
+    }
+
+    .mini-stat span {
+      display: block;
+      color: var(--text-3);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .mini-stat strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 19px;
+      line-height: 24px;
+      font-weight: 900;
+    }
+
+    .new-project-btn {
+      height: 44px;
+      padding: 0 22px;
+      border: 0;
+      border-radius: 12px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      font-weight: 800;
+      box-shadow: var(--shadow-purple);
+    }
+
+    .mode-tabs {
+      width: fit-content;
+      display: flex;
+      gap: 6px;
+      padding: 6px;
+      border-radius: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+
+    .mode-tab {
+      height: 38px;
+      padding: 0 24px;
+      border: 0;
+      border-radius: 12px;
+      color: var(--text-2);
+      background: transparent;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .mode-tab.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 10px 20px rgba(124, 92, 255, .22);
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(390px, 520px) minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .config-panel,
+    .preview-panel {
+      border-radius: 20px;
+      background: rgba(255,255,255,.86);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(16px);
+    }
+
+    [data-theme="dark"] .config-panel,
+    [data-theme="dark"] .preview-panel {
+      background: rgba(18, 24, 38, .78);
+    }
+
+    .config-panel {
+      overflow: hidden;
+    }
+
+    .step {
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .step:last-child {
+      border-bottom: 0;
+    }
+
+    .step-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .step-title-wrap {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      color: var(--primary);
+      background: rgba(124, 92, 255, .14);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .step h3 {
+      margin: 0 0 5px;
+      font-size: 18px;
+      line-height: 24px;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--text-3);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .step-link {
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .upload-zone {
+      height: 150px;
+      border-radius: 16px;
+      border: 1.5px dashed rgba(124, 92, 255, .38);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(124, 92, 255, .08), transparent 42%),
+        var(--bg-soft);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      transition: .2s ease;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .upload-icon {
+      width: 38px;
+      height: 38px;
+      margin: 0 auto 12px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: var(--primary);
+      background: #fff;
+      box-shadow: var(--shadow-sm);
+      font-size: 20px;
+    }
+
+    [data-theme="dark"] .upload-icon {
+      background: rgba(255,255,255,.08);
+    }
+
+    .upload-zone strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--text);
+    }
+
+    .upload-zone span {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--text-3);
+      font-size: 12px;
+    }
+
+    .small-primary {
+      height: 34px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 9px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 10px 22px rgba(124, 92, 255, .18);
+    }
+
+    .model-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .model-card {
+      position: relative;
+      padding: 8px;
+      border-radius: 15px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: .2s ease;
+    }
+
+    .model-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(124, 92, 255, .35);
+    }
+
+    .model-card.active {
+      border: 2px solid var(--primary);
+      box-shadow: 0 14px 28px rgba(124, 92, 255, .16);
+    }
+
+    .model-img {
+      height: 82px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #e9edf5;
+    }
+
+    .model-name {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .model-tags {
+      margin-top: 5px;
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      height: 19px;
+      padding: 0 7px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      color: var(--text-2);
+      background: var(--bg-soft);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .selected-dot {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: none;
+      place-items: center;
+      color: #fff;
+      background: var(--primary);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .model-card.active .selected-dot {
+      display: grid;
+    }
+
+    .scene-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .scene-card {
+      position: relative;
+      height: 76px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      background: #e9edf5;
+      transition: .2s ease;
+    }
+
+    .scene-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .scene-card.active {
+      border-color: var(--primary);
+      box-shadow: 0 14px 28px rgba(124, 92, 255, .15);
+    }
+
+    .scene-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.45));
+    }
+
+    .scene-card span {
+      position: absolute;
+      left: 10px;
+      bottom: 9px;
+      z-index: 1;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .option-group {
+      display: grid;
+      gap: 14px;
+    }
+
+    .option-line {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .option-label {
+      color: var(--text-2);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .seg {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .seg button {
+      min-width: 58px;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .seg button.active {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: rgba(124, 92, 255, .10);
+    }
+
+    .action-bar {
+      padding: 18px 24px 22px;
+      background: linear-gradient(180deg, transparent, rgba(124, 92, 255, .05));
+    }
+
+    .cost-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      color: var(--text-2);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .cost-line strong {
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    .generate-btn {
+      width: 100%;
+      height: 48px;
+      border: 0;
+      border-radius: 13px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: var(--shadow-purple);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .preview-panel {
+      overflow: hidden;
+    }
+
+    .preview-head {
+      min-height: 78px;
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-head h3 {
+      margin: 0 0 5px;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .preview-head p {
+      margin: 0;
+      color: var(--text-3);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .preview-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ghost-btn {
+      height: 38px;
+      padding: 0 15px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text-2);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .preview-canvas {
+      position: relative;
+      margin: 24px 28px 0;
+      height: min(59vh, 620px);
+      min-height: 440px;
+      border-radius: 18px;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(124,92,255,.08), transparent 32%),
+        linear-gradient(180deg, #f7f8fc, #ffffff);
+      border: 1px solid var(--border);
+    }
+
+    [data-theme="dark"] .preview-canvas {
+      background:
+        linear-gradient(135deg, rgba(124,92,255,.10), transparent 32%),
+        linear-gradient(180deg, #111827, #090b14);
+    }
+
+    .result-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      transition: .3s ease;
+    }
+
+    .ratio-label {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(0,0,0,.46);
+      backdrop-filter: blur(12px);
+      display: inline-flex;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .canvas-arrow {
+      position: absolute;
+      top: 50%;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.6);
+      background: rgba(255,255,255,.82);
+      color: #111827;
+      display: grid;
+      place-items: center;
+      transform: translateY(-50%);
+      box-shadow: 0 12px 30px rgba(0,0,0,.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .canvas-arrow.left {
+      left: 22px;
+    }
+
+    .canvas-arrow.right {
+      right: 22px;
+    }
+
+    .zoom-bar {
+      position: absolute;
+      left: 50%;
+      bottom: 22px;
+      height: 46px;
+      padding: 0 14px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      color: #fff;
+      background: rgba(17, 24, 39, .72);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 14px 34px rgba(0,0,0,.22);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .zoom-bar button {
+      width: 26px;
+      height: 26px;
+      border: 0;
+      color: #fff;
+      background: transparent;
+      font-size: 20px;
+    }
+
+    .recent {
+      padding: 22px 28px 28px;
+    }
+
+    .recent-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .recent-head h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .recent-head a {
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .recent-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .recent-card {
+      position: relative;
+      height: 172px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #e9edf5;
+      box-shadow: var(--shadow-sm);
+      transition: .2s ease;
+    }
+
+    .recent-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .recent-card::after {
+      content: "";
+      position: absolute;
+      inset: 55% 0 0;
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,.54));
+    }
+
+    .recent-card span {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      z-index: 1;
+      height: 24px;
+      padding: 0 9px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      color: #fff;
+      background: rgba(0,0,0,.48);
+      backdrop-filter: blur(10px);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 1280px) {
+      :root {
+        --sidebar: 82px;
+      }
+
+      .brand {
+        justify-content: center;
+        padding: 0 18px;
+      }
+
+      .brand-name {
+        display: none;
+      }
+
+      .topnav {
+        gap: 22px;
+        padding: 0 26px;
+      }
+
+      .sidebar {
+        padding: 24px 12px;
+      }
+
+      .sidebar-title,
+      .side-item span:not(.side-icon),
+      .upgrade-card {
+        display: none;
+      }
+
+      .side-item {
+        justify-content: center;
+        padding: 0;
+      }
+
+      .content-grid {
+        grid-template-columns: 420px 1fr;
+      }
+
+      .model-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .recent-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .topbar {
+        grid-template-columns: auto 1fr auto;
+      }
+
+      .topnav {
+        display: none;
+      }
+
+      .workspace {
+        padding: 22px 18px 30px;
+      }
+
+      .workspace-head {
+        flex-direction: column;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .config-panel {
+        order: 1;
+      }
+
+      .preview-panel {
+        order: 2;
+      }
+
+      .preview-canvas {
+        height: 520px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      :root {
+        --sidebar: 0px;
+        --header: 64px;
+      }
+
+      .topbar {
+        grid-template-columns: 1fr auto;
+      }
+
+      .brand {
+        border-right: 0;
+      }
+
+      .top-actions {
+        padding: 0 14px;
+      }
+
+      .credit-pill,
+      .user-name,
+      .circle-btn:nth-child(2) {
+        display: none;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .workspace {
+        padding: 18px 14px 26px;
+      }
+
+      .page-title {
+        font-size: 26px;
+      }
+
+      .head-stats {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .mode-tabs {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .mode-tab {
+        flex: 1 0 auto;
+      }
+
+      .model-grid,
+      .scene-row,
+      .recent-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .step {
+        padding: 20px 16px;
+      }
+
+      .option-line {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-head {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 20px 16px;
+      }
+
+      .preview-actions {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .preview-canvas {
+        margin: 16px 16px 0;
+        min-height: 420px;
+        height: 460px;
+      }
+
+      .recent {
+        padding: 20px 16px 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">PS</div>
+        <div class="brand-name">PhotoStudio AI</div>
+      </div>
+
+      <nav class="topnav">
+        <a href="#">首页</a>
+        <a class="active" href="#">AI 在线生成</a>
+        <a href="#">AI 编辑工具箱</a>
+        <a href="#">视频生成</a>
+        <a href="#">AI 创意图</a>
+        <a href="#">企业版</a>
+        <a href="#">价格</a>
+      </nav>
+
+      <div class="top-actions">
+        <button class="circle-btn" id="themeToggle">☾</button>
+        <div class="credit-pill"><span class="badge">◎</span>积分 12,800</div>
+        <button class="circle-btn">🔔</button>
+        <div class="avatar">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=128&q=80" alt="">
+        </div>
+        <div class="user-name">高示用户⌄</div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-group">
+          <div class="sidebar-title">创作工作台</div>
+          <div class="side-menu">
+            <a class="side-item active" href="#"><span class="side-icon">✦</span><span>AI 在线生成</span></a>
+            <a class="side-item" href="#"><span class="side-icon">✎</span><span>AI 编辑工具箱</span></a>
+            <a class="side-item" href="#"><span class="side-icon">▣</span><span>视频生成</span></a>
+            <a class="side-item" href="#"><span class="side-icon">☆</span><span>AI 创意生图</span></a>
+          </div>
+        </div>
+
+        <div class="sidebar-group">
+          <div class="sidebar-title">资产管理</div>
+          <div class="side-menu">
+            <a class="side-item" href="#"><span class="side-icon">▤</span><span>我的项目</span></a>
+            <a class="side-item" href="#"><span class="side-icon">▥</span><span>素材管理</span></a>
+            <a class="side-item" href="#"><span class="side-icon">♧</span><span>模型与风格</span></a>
+            <a class="side-item" href="#"><span class="side-icon">◇</span><span>品牌库</span></a>
+          </div>
+        </div>
+
+        <div class="sidebar-group">
+          <div class="sidebar-title">账号与服务</div>
+          <div class="side-menu">
+            <a class="side-item" href="#"><span class="side-icon">◎</span><span>积分中心</span></a>
+            <a class="side-item" href="#"><span class="side-icon">▧</span><span>企业版</span></a>
+            <a class="side-item" href="#"><span class="side-icon">⚙</span><span>设置与偏好</span></a>
+          </div>
+        </div>
+
+        <div class="upgrade-card">
+          <h3>升级企业版</h3>
+          <ul>
+            <li>无限生成次数</li>
+            <li>更多专属模型</li>
+            <li>商用授权支持</li>
+            <li>团队协作管理</li>
+          </ul>
+          <button class="white-btn">立即升级</button>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <div class="workspace-head">
+          <div>
+            <div class="breadcrumbs">工作台 / AI 在线生成</div>
+            <h1 class="page-title">AI 在线生成</h1>
+            <p class="page-desc">上传服装素材，选择模特与场景，AI 为您生成高质量时尚大片</p>
+          </div>
+
+          <div class="head-stats">
+            <div class="mini-stat">
+              <span>可用积分</span>
+              <strong>12,800</strong>
+            </div>
+            <div class="mini-stat">
+              <span>今日生成</span>
+              <strong>36</strong>
+            </div>
+            <button class="new-project-btn">＋ 新建项目</button>
+          </div>
+        </div>
+
+        <div class="mode-tabs">
+          <button class="mode-tab active">衣服图</button>
+          <button class="mode-tab">真人图</button>
+          <button class="mode-tab">人台图</button>
+          <button class="mode-tab">模特替换</button>
+        </div>
+
+        <section class="content-grid">
+          <div class="config-panel">
+            <div class="step">
+              <div class="step-head">
+                <div class="step-title-wrap">
+                  <div class="step-num">1</div>
+                  <div>
+                    <h3>上传服装素材</h3>
+                    <p>支持 JPG / PNG，建议 ≥ 1024px，背景简洁效果更佳</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="upload-zone">
+                <div>
+                  <div class="upload-icon">↥</div>
+                  <strong>拖拽图片到此处，或点击上传</strong>
+                  <span>支持格式：JPG / PNG，建议 ≥ 1024px</span>
+                  <button class="small-primary">选择图片</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-head">
+                <div class="step-title-wrap">
+                  <div class="step-num">2</div>
+                  <div>
+                    <h3>选择 AI 模特</h3>
+                  </div>
+                </div>
+                <a class="step-link" href="#">更多模特 ›</a>
+              </div>
+
+              <div class="model-grid">
+                <div class="model-card active">
+                  <div class="selected-dot">✓</div>
+                  <div class="model-img"><img src="https://images.unsplash.com/photo-1496440737103-cd596325d314?auto=format&fit=crop&w=360&q=90" alt=""></div>
+                  <div class="model-name">Lena</div>
+                  <div class="model-tags"><span class="tag">欧美</span><span class="tag">青年</span></div>
+                </div>
+                <div class="model-card">
+                  <div class="model-img"><img src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&w=360&q=90" alt=""></div>
+                  <div class="model-name">Mia</div>
+                  <div class="model-tags"><span class="tag">亚洲</span><span class="tag">青年</span></div>
+                </div>
+                <div class="model-card">
+                  <div class="model-img"><img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=360&q=90" alt=""></div>
+                  <div class="model-name">Noah</div>
+                  <div class="model-tags"><span class="tag">欧美</span><span class="tag">休闲</span></div>
+                </div>
+                <div class="model-card">
+                  <div class="model-img"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=360&q=90" alt=""></div>
+                  <div class="model-name">Sora</div>
+                  <div class="model-tags"><span class="tag">亚洲</span><span class="tag">通勤</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-head">
+                <div class="step-title-wrap">
+                  <div class="step-num">3</div>
+                  <div>
+                    <h3>选择商拍场景</h3>
+                    <p>选择场景后右侧预览背景将同步变化</p>
+                  </div>
+                </div>
+                <a class="step-link" href="#">更多场景 ›</a>
+              </div>
+
+              <div class="scene-row">
+                <div class="scene-card active">
+                  <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=360&q=90" alt="">
+                  <span>都市街拍</span>
+                </div>
+                <div class="scene-card">
+                  <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=360&q=90" alt="">
+                  <span>极简白棚</span>
+                </div>
+                <div class="scene-card">
+                  <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=360&q=90" alt="">
+                  <span>海边度假</span>
+                </div>
+                <div class="scene-card">
+                  <img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=360&q=90" alt="">
+                  <span>复古建筑</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-head">
+                <div class="step-title-wrap">
+                  <div class="step-num">4</div>
+                  <div>
+                    <h3>生成参数</h3>
+                  </div>
+                </div>
+              </div>
+
+              <div class="option-group">
+                <div class="option-line">
+                  <div class="option-label">画面比例</div>
+                  <div class="seg">
+                    <button>1:1</button>
+                    <button class="active">3:4</button>
+                    <button>4:5</button>
+                    <button>9:16</button>
+                    <button>16:9</button>
+                  </div>
+                </div>
+
+                <div class="option-line">
+                  <div class="option-label">模特姿态</div>
+                  <div class="seg">
+                    <button class="active">站姿</button>
+                    <button>坐姿</button>
+                    <button>走姿</button>
+                  </div>
+                </div>
+
+                <div class="option-line">
+                  <div class="option-label">画质</div>
+                  <div class="seg">
+                    <button>标准</button>
+                    <button class="active">高清</button>
+                    <button>超清</button>
+                  </div>
+                </div>
+
+                <div class="option-line">
+                  <div class="option-label">生成数量</div>
+                  <div class="seg">
+                    <button>1 张</button>
+                    <button class="active">2 张</button>
+                    <button>4 张</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <div class="cost-line">
+                <span>预计消耗 <strong>20</strong> 积分</span>
+                <span>可用积分 12,800</span>
+              </div>
+              <button class="generate-btn">立即生成 ✨</button>
+            </div>
+          </div>
+
+          <div class="preview-panel">
+            <div class="preview-head">
+              <div>
+                <h3>生成结果预览</h3>
+                <p>支持放大、下载、前后对比</p>
+              </div>
+              <div class="preview-actions">
+                <button class="ghost-btn">⇄ 前后对比</button>
+                <button class="ghost-btn">⇩ 下载结果</button>
+                <button class="ghost-btn">▱ 保存项目</button>
+              </div>
+            </div>
+
+            <div class="preview-canvas">
+              <img class="result-img" src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1400&q=90" alt="">
+              <div class="ratio-label">高清 3:4</div>
+              <button class="canvas-arrow left">‹</button>
+              <button class="canvas-arrow right">›</button>
+              <div class="zoom-bar">
+                <button>−</button>
+                <span>100%</span>
+                <button>＋</button>
+                <button>⛶</button>
+              </div>
+            </div>
+
+            <div class="recent">
+              <div class="recent-head">
+                <h3>◷ 最近生成</h3>
+                <a href="#">查看全部 ›</a>
+              </div>
+
+              <div class="recent-grid">
+                <div class="recent-card">
+                  <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=520&q=90" alt="">
+                  <span>3:4</span>
+                </div>
+                <div class="recent-card">
+                  <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=520&q=90" alt="">
+                  <span>3:4</span>
+                </div>
+                <div class="recent-card">
+                  <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=520&q=90" alt="">
+                  <span>3:4</span>
+                </div>
+                <div class="recent-card">
+                  <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=520&q=90" alt="">
+                  <span>3:4</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    const toggle = document.querySelector('#themeToggle');
+    toggle.addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      toggle.textContent = next === 'dark' ? '☾' : '☀';
+    });
+
+    document.querySelectorAll('.mode-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-tab').forEach(item => item.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.model-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.model-card').forEach(item => item.classList.remove('active'));
+        card.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.scene-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.scene-card').forEach(item => item.classList.remove('active'));
+        card.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.seg button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.parentElement;
+        group.querySelectorAll('button').forEach(item => item.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

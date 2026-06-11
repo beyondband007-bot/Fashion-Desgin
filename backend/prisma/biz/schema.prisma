@@ -1,0 +1,354 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../generated/biz-client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("BIZ_DATABASE_URL")
+}
+
+enum UserType {
+  personal
+  enterprise
+}
+
+enum UserStatus {
+  active
+  frozen
+  deleted
+}
+
+enum CreditAccountStatus {
+  pending
+  ready
+  failed
+  disabled
+}
+
+enum OwnerType {
+  user
+  enterprise
+  system
+}
+
+enum AssetStatus {
+  uploading
+  ready
+  failed
+  deleted
+}
+
+enum ReviewStatus {
+  pending
+  passed
+  rejected
+}
+
+enum ProjectStatus {
+  active
+  archived
+  deleted
+}
+
+enum QuoteStatus {
+  active
+  used
+  expired
+}
+
+enum TaskStatus {
+  created
+  billing_pending
+  queued
+  processing
+  completed
+  failed
+  cancelling
+  cancelled
+}
+
+enum BillingStatus {
+  not_started
+  freezing
+  frozen
+  settling
+  settled
+  refunding
+  refunded
+  failed
+}
+
+enum TaskModule {
+  ai_generate
+  creative
+  video_beta
+  delivery
+}
+
+enum TaskType {
+  clothes
+  real
+  mannequin
+  model_replace
+  video
+  creative
+}
+
+model User {
+  id                   String              @id @db.Char(26)
+  phoneCiphertext      Bytes?              @map("phone_ciphertext") @db.VarBinary(512)
+  phoneHash            String?             @unique(map: "uk_users_phone_hash") @map("phone_hash") @db.Char(64)
+  emailCiphertext      Bytes?              @map("email_ciphertext") @db.VarBinary(512)
+  emailHash            String?             @unique(map: "uk_users_email_hash") @map("email_hash") @db.Char(64)
+  passwordHash         String?             @map("password_hash") @db.VarChar(255)
+  nickname             String              @db.VarChar(40)
+  avatarAssetId        String?             @map("avatar_asset_id") @db.Char(26)
+  userType             UserType            @map("user_type")
+  status               UserStatus
+  registerSource       String              @map("register_source") @db.VarChar(20)
+  creditAccountId      String?             @map("credit_account_id") @db.Char(26)
+  creditAccountStatus  CreditAccountStatus @map("credit_account_status")
+  nicknameUpdatedAt    DateTime?           @map("nickname_updated_at") @db.DateTime(3)
+  lastLoginAt          DateTime?           @map("last_login_at") @db.DateTime(3)
+  lastLoginIp          String?             @map("last_login_ip") @db.VarChar(45)
+  createdAt            DateTime            @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt            DateTime            @updatedAt @map("updated_at") @db.DateTime(3)
+  deletedAt            DateTime?           @map("deleted_at") @db.DateTime(3)
+  authSessions         AuthSession[]
+  taskQuotes           TaskQuote[]
+  generationTasks      GenerationTask[]
+
+  @@index([status, createdAt], map: "idx_users_status_created")
+  @@index([creditAccountId], map: "idx_users_credit_account")
+  @@map("users")
+}
+
+model AuthSession {
+  id               String    @id @db.Char(26)
+  userId           String    @map("user_id") @db.Char(26)
+  refreshTokenHash String    @unique @map("refresh_token_hash") @db.Char(64)
+  deviceId         String?   @map("device_id") @db.VarChar(128)
+  deviceName       String?   @map("device_name") @db.VarChar(100)
+  userAgent        String?   @map("user_agent") @db.VarChar(512)
+  ipAddress        String?   @map("ip_address") @db.VarChar(45)
+  status           String    @db.VarChar(20)
+  expiresAt        DateTime  @map("expires_at") @db.DateTime(3)
+  lastActiveAt     DateTime  @map("last_active_at") @db.DateTime(3)
+  revokedAt        DateTime? @map("revoked_at") @db.DateTime(3)
+  revokeReason     String?   @map("revoke_reason") @db.VarChar(64)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  user             User      @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "idx_auth_sessions_user_id")
+  @@map("auth_sessions")
+}
+
+model VerificationCode {
+  id                String    @id @db.Char(26)
+  targetHash        String    @map("target_hash") @db.Char(64)
+  purpose           String    @db.VarChar(32)
+  codeHash          String    @map("code_hash") @db.Char(64)
+  status            String    @db.VarChar(20)
+  attemptCount      Int       @default(0) @map("attempt_count")
+  sendChannel       String    @map("send_channel") @db.VarChar(20)
+  providerMessageId String?   @map("provider_message_id") @db.VarChar(128)
+  ipAddress         String?   @map("ip_address") @db.VarChar(45)
+  expiresAt         DateTime  @map("expires_at") @db.DateTime(3)
+  verifiedAt        DateTime? @map("verified_at") @db.DateTime(3)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+
+  @@index([targetHash], map: "idx_verification_codes_target_hash")
+  @@map("verification_codes")
+}
+
+model Asset {
+  id               String       @id @db.Char(26)
+  ownerType        OwnerType    @map("owner_type")
+  ownerId          String?      @map("owner_id") @db.Char(26)
+  folderId         String?      @map("folder_id") @db.Char(26)
+  name             String       @db.VarChar(255)
+  originalFileName String       @map("original_file_name") @db.VarChar(255)
+  purpose          String?      @db.VarChar(32)
+  mediaType        String       @map("media_type") @db.VarChar(20)
+  mimeType         String       @map("mime_type") @db.VarChar(128)
+  fileExt          String       @map("file_ext") @db.VarChar(16)
+  fileSize         BigInt       @map("file_size") @db.UnsignedBigInt
+  sha256           String?      @db.Char(64)
+  storageProvider  String       @map("storage_provider") @db.VarChar(20)
+  storageBucket    String       @map("storage_bucket") @db.VarChar(128)
+  storageKey       String       @map("storage_key") @db.VarChar(1024)
+  publicUrl        String?      @map("public_url") @db.VarChar(1024)
+  thumbnailUrl     String?      @map("thumbnail_url") @db.VarChar(1024)
+  width            Int?
+  height           Int?
+  durationMs       BigInt?      @map("duration_ms")
+  metadataJson     Json?        @map("metadata_json")
+  reviewStatus     ReviewStatus @map("review_status")
+  reviewResultJson Json?        @map("review_result_json")
+  favorite         Boolean      @default(false)
+  status           AssetStatus
+  createdAt        DateTime     @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt        DateTime     @updatedAt @map("updated_at") @db.DateTime(3)
+  deletedAt        DateTime?    @map("deleted_at") @db.DateTime(3)
+
+  @@index([ownerType, ownerId, purpose, createdAt], map: "idx_assets_owner_purpose_created")
+  @@index([ownerType, ownerId, folderId, createdAt], map: "idx_assets_owner_folder_created")
+  @@index([ownerType, ownerId, sha256], map: "idx_assets_owner_sha256")
+  @@map("assets")
+}
+
+model Project {
+  id             String      @id @db.Char(26)
+  ownerType      OwnerType   @map("owner_type")
+  ownerId        String      @map("owner_id") @db.Char(26)
+  createdBy      String      @map("created_by") @db.Char(26)
+  name           String      @db.VarChar(160)
+  description    String?     @db.VarChar(1000)
+  coverAssetId   String?     @map("cover_asset_id") @db.Char(26)
+  status         ProjectStatus
+  taskCount      Int         @default(0) @map("task_count")
+  lastActivityAt DateTime?   @map("last_activity_at") @db.DateTime(3)
+  createdAt      DateTime    @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt      DateTime    @updatedAt @map("updated_at") @db.DateTime(3)
+  deletedAt      DateTime?   @map("deleted_at") @db.DateTime(3)
+  tasks          GenerationTask[]
+
+  @@index([ownerType, ownerId, status, updatedAt], map: "idx_projects_owner_status_updated")
+  @@map("projects")
+}
+
+model TaskQuote {
+  id                 String    @id @db.Char(26)
+  userId             String    @map("user_id") @db.Char(26)
+  billingOwnerType   OwnerType @map("billing_owner_type")
+  billingOwnerId     String    @map("billing_owner_id") @db.Char(26)
+  creditAccountId    String    @map("credit_account_id") @db.Char(26)
+  taskType           TaskType  @map("task_type")
+  module             TaskModule
+  requestHash        String    @map("request_hash") @db.Char(64)
+  planCode           String    @map("plan_code") @db.VarChar(32)
+  ruleVersion        String    @map("rule_version") @db.VarChar(32)
+  unitCredits        Decimal   @map("unit_credits") @db.Decimal(18, 4)
+  billableQuantity   Decimal   @map("billable_quantity") @db.Decimal(18, 4)
+  estimatedCredits   Decimal   @map("estimated_credits") @db.Decimal(18, 4)
+  configSnapshotJson Json      @map("config_snapshot_json")
+  status             QuoteStatus
+  expiresAt          DateTime  @map("expires_at") @db.DateTime(3)
+  usedAt             DateTime? @map("used_at") @db.DateTime(3)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  user               User      @relation(fields: [userId], references: [id])
+  tasks              GenerationTask[]
+
+  @@index([userId, status, expiresAt], map: "idx_task_quotes_user_status_expires")
+  @@index([module, taskType, createdAt], map: "idx_task_quotes_module_type_created")
+  @@map("task_quotes")
+}
+
+model GenerationTask {
+  id                String        @id @db.Char(26)
+  userId            String        @map("user_id") @db.Char(26)
+  ownerType         OwnerType     @map("owner_type")
+  ownerId           String        @map("owner_id") @db.Char(26)
+  projectId         String?       @map("project_id") @db.Char(26)
+  parentTaskId      String?       @map("parent_task_id") @db.Char(26)
+  quoteId           String?       @map("quote_id") @db.Char(26)
+  name              String        @db.VarChar(160)
+  module            TaskModule
+  scene             String?       @db.VarChar(64)
+  taskType          TaskType      @map("task_type")
+  sourcePage        String?       @map("source_page") @db.VarChar(255)
+  batchId           String?       @map("batch_id") @db.Char(26)
+  status            TaskStatus
+  progress          Int           @default(0)
+  stage             String?       @db.VarChar(32)
+  queuePriority     Int           @default(0) @map("queue_priority")
+  queuePosition     Int?          @map("queue_position")
+  modelId           String?       @map("model_id") @db.Char(26)
+  sceneId           String?       @map("scene_id") @db.Char(26)
+  templateId        String?       @map("template_id") @db.Char(26)
+  configJson        Json          @map("config_json")
+  configVersion     String        @map("config_version") @db.VarChar(32)
+  billingOwnerType  OwnerType     @map("billing_owner_type")
+  billingOwnerId    String        @map("billing_owner_id") @db.Char(26)
+  creditAccountId   String        @map("credit_account_id") @db.Char(26)
+  billingTaskId     String?       @map("billing_task_id") @db.Char(26)
+  billingStatus     BillingStatus @map("billing_status")
+  estimatedCredits  Decimal       @map("estimated_credits") @db.Decimal(18, 4)
+  settledCredits    Decimal?      @map("settled_credits") @db.Decimal(18, 4)
+  errorCode         String?       @map("error_code") @db.VarChar(64)
+  errorMessage      String?       @map("error_message") @db.VarChar(2000)
+  retryCount        Int           @default(0) @map("retry_count")
+  cancellable       Boolean       @default(true)
+  deadlineAt        DateTime?     @map("deadline_at") @db.DateTime(3)
+  startedAt         DateTime?     @map("started_at") @db.DateTime(3)
+  completedAt       DateTime?     @map("completed_at") @db.DateTime(3)
+  cancelledAt       DateTime?     @map("cancelled_at") @db.DateTime(3)
+  createdAt         DateTime      @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt         DateTime      @updatedAt @map("updated_at") @db.DateTime(3)
+  deletedAt         DateTime?     @map("deleted_at") @db.DateTime(3)
+  version           Int           @default(0)
+  user              User          @relation(fields: [userId], references: [id])
+  project           Project?      @relation(fields: [projectId], references: [id])
+  quote             TaskQuote?    @relation(fields: [quoteId], references: [id])
+  inputs            TaskInput[]
+  outputs           TaskOutput[]
+  events            TaskEvent[]
+
+  @@index([userId, status, createdAt], map: "idx_generation_tasks_user_status_created")
+  @@index([ownerType, ownerId, taskType, createdAt], map: "idx_generation_tasks_owner_type_created")
+  @@index([module, status, updatedAt], map: "idx_generation_tasks_module_status_updated")
+  @@index([projectId, status, updatedAt], map: "idx_generation_tasks_project_status_updated")
+  @@index([batchId, createdAt], map: "idx_generation_tasks_batch_created")
+  @@index([billingStatus, updatedAt], map: "idx_generation_tasks_billing_status_updated")
+  @@map("generation_tasks")
+}
+
+model TaskInput {
+  id           String   @id @db.Char(26)
+  taskId       String   @map("task_id") @db.Char(26)
+  assetId      String   @map("asset_id") @db.Char(26)
+  inputRole    String   @map("input_role") @db.VarChar(32)
+  sortOrder    Int      @default(0) @map("sort_order")
+  snapshotJson Json?    @map("snapshot_json")
+  createdAt    DateTime @default(now()) @map("created_at") @db.DateTime(3)
+  task         GenerationTask @relation(fields: [taskId], references: [id])
+
+  @@index([taskId], map: "idx_task_inputs_task_id")
+  @@index([assetId], map: "idx_task_inputs_asset_id")
+  @@map("task_inputs")
+}
+
+model TaskOutput {
+  id                String   @id @db.Char(26)
+  taskId            String   @map("task_id") @db.Char(26)
+  assetId           String   @map("asset_id") @db.Char(26)
+  outputType        String   @map("output_type") @db.VarChar(20)
+  sortOrder         Int      @default(0) @map("sort_order")
+  providerOutputRef String?  @map("provider_output_ref") @db.VarChar(256)
+  reviewStatus      String   @map("review_status") @db.VarChar(20)
+  createdAt         DateTime @default(now()) @map("created_at") @db.DateTime(3)
+  task              GenerationTask @relation(fields: [taskId], references: [id])
+
+  @@index([taskId], map: "idx_task_outputs_task_id")
+  @@index([assetId], map: "idx_task_outputs_asset_id")
+  @@map("task_outputs")
+}
+
+model TaskEvent {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  taskId     String   @map("task_id") @db.Char(26)
+  eventType  String   @map("event_type") @db.VarChar(64)
+  fromStatus String?  @map("from_status") @db.VarChar(24)
+  toStatus   String?  @map("to_status") @db.VarChar(24)
+  progress   Int?
+  payloadJson Json?   @map("payload_json")
+  requestId  String?  @map("request_id") @db.VarChar(64)
+  createdAt  DateTime @default(now()) @map("created_at") @db.DateTime(3)
+  task       GenerationTask @relation(fields: [taskId], references: [id])
+
+  @@index([taskId], map: "idx_task_events_task_id")
+  @@index([eventType, createdAt], map: "idx_task_events_type_created")
+  @@map("task_events")
+}
+

@@ -94,10 +94,10 @@ export function WorkspaceSidebar() {
       </nav>
 
       <div className={styles.sidebarUpgrade}>
-        <h4>企业内容生产提效</h4>
-        <p>统一工作台管理模特图、视频与交付任务</p>
+        <h4>升级企业版</h4>
+        <p>无限生成次数 · 更多专属模型 · 商用授权 · 团队协作</p>
         <Button type="primary" long size="small" onClick={() => navigate('/enterprise')}>
-          查看企业方案
+          立即升级
         </Button>
       </div>
     </aside>

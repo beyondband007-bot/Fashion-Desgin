@@ -1,5 +1,4 @@
-import { Button } from '@arco-design/web-react'
-import { IconClose, IconUpload } from '@arco-design/web-react/icon'
+import { IconClose, IconFolder } from '@arco-design/web-react/icon'
 import { useDropzone } from 'react-dropzone'
 
 import type { GenerateTaskStatus, UploadedFile } from '@/types/generate'
@@ -8,6 +7,8 @@ import { formatFileSize } from '@/utils/format'
 import styles from '../index.module.scss'
 
 type UploadStepProps = {
+  title?: string
+  uploadLabel?: string
   files: UploadedFile[]
   status: GenerateTaskStatus
   maxFiles?: number
@@ -15,7 +16,15 @@ type UploadStepProps = {
   onRemove: (id: string) => void
 }
 
-export function UploadStep({ files, status, maxFiles = 8, onUpload, onRemove }: UploadStepProps) {
+export function UploadStep({
+  title = '衣服平铺图',
+  uploadLabel = '衣服图',
+  files,
+  status,
+  maxFiles = 8,
+  onUpload,
+  onRemove,
+}: UploadStepProps) {
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     multiple: true,
     accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] },
@@ -29,26 +38,21 @@ export function UploadStep({ files, status, maxFiles = 8, onUpload, onRemove }: 
     files.length > 0 ? Math.round(files.reduce((sum, f) => sum + f.progress, 0) / files.length) : 0
 
   return (
-    <section className={styles.stepCard}>
-      <div className={styles.stepHead}>
-        <h3 className={styles.stepTitle}>1. 上传服装素材</h3>
-        <p className={styles.stepDesc}>支持平铺图、挂拍图、人台图，多图可批量生成</p>
-      </div>
+    <section className={styles.configSection}>
+      <div className={styles.configSectionTitle}>{title}</div>
 
       {files.length === 0 ? (
         <div
           {...getRootProps()}
           className={`${styles.uploadZone}${isDragActive ? ` ${styles.uploadZoneActive}` : ''}`}
+          onClick={open}
         >
           <input {...getInputProps()} />
           <div className={styles.uploadIcon}>
-            <IconUpload />
+            <IconFolder />
           </div>
-          <p className={styles.uploadText}>拖拽图片到此处，或点击上传</p>
-          <p className={styles.uploadHint}>支持格式：JPG / PNG，建议 ≥ 1024px</p>
-          <Button type="primary" onClick={open}>
-            选择图片
-          </Button>
+          <p className={styles.uploadTitle}>{uploadLabel}</p>
+          <p className={styles.uploadText}>点击或将图片拖拽至区域</p>
         </div>
       ) : (
         <div className={styles.uploadDone}>
@@ -56,9 +60,9 @@ export function UploadStep({ files, status, maxFiles = 8, onUpload, onRemove }: 
             <span>
               已上传 {files.filter((f) => f.progress >= 100).length} / {maxFiles}
             </span>
-            <Button type="text" size="small" onClick={open}>
+            <button type="button" className={styles.configSectionLink} onClick={open}>
               继续添加
-            </Button>
+            </button>
           </div>
           {uploading ? (
             <div className={styles.uploadProgress}>

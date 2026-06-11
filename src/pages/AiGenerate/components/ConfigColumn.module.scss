@@ -1,0 +1,106 @@
+// 中间操作栏外壳 — 以 AI 试衣配置栏（图2）为标准结构
+
+.configColumn {
+  width: 360px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.configColumnCard {
+  background: #f5f7fa;
+
+  .configColumnBody {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .configColumnFooter {
+    background: #f5f7fa;
+  }
+}
+
+[data-theme='dark'] .configColumnCard {
+  background: var(--bg-primary);
+
+  .configColumnFooter {
+    background: var(--bg-primary);
+  }
+}
+
+.configColumnHeader {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.configColumnBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.configColumnFooter {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-color);
+  background: var(--card-bg);
+}
+
+// 顶部 Tab（图2）
+.configTabs {
+  display: flex;
+}
+
+.configTab {
+  flex: 1;
+  height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: 0.15s ease;
+
+  &:hover {
+    color: var(--primary);
+  }
+}
+
+.configTabActive {
+  color: var(--primary);
+  font-weight: 600;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 32px;
+    height: 2px;
+    transform: translateX(-50%);
+    background: var(--primary);
+    border-radius: 2px 2px 0 0;
+  }
+}
+
+@media (max-width: 1280px) {
+  .configColumn {
+    width: 320px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .configColumn {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+}

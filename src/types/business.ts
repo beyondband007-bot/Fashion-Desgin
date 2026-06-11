@@ -70,3 +70,19 @@ export type ProjectItem = {
   taskCount: number
   cover: string
 }
+
+export type CreativeTemplate = {
+  id: string
+  name: string
+  category: string
+  cover: string
+  tag?: string
+}
+
+export type CurrentPlanInfo = {
+  name: string
+  expiresAt: string
+  credits: number
+  concurrency: number
+  billingCycle: PlanBillingCycle
+}

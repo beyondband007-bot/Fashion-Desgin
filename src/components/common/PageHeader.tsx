@@ -5,13 +5,20 @@ type PageHeaderProps = {
   description: string
   breadcrumb?: string[]
   extra?: React.ReactNode
+  showBreadcrumb?: boolean
 }
 
-export function PageHeader({ title, description, breadcrumb, extra }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  description,
+  breadcrumb,
+  extra,
+  showBreadcrumb = false,
+}: PageHeaderProps) {
   return (
     <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
       <div>
-        {breadcrumb ? (
+        {showBreadcrumb && breadcrumb ? (
           <Breadcrumb className="mb-3">
             {breadcrumb.map((item) => (
               <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>

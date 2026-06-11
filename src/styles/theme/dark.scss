@@ -21,7 +21,14 @@
   --text-secondary: #b5bdd1;
   --text-tertiary: #7d879d;
 
-  --header-bg: rgba(9, 11, 20, 0.7);
+  --header-bg: #0d1117;
+  --header-border: rgba(255, 255, 255, 0.08);
+  --header-promo-gift-bg: rgba(255, 184, 77, 0.14);
+  --header-promo-gift-text: #ffb84d;
+  --header-promo-vip-bg: #1a1520;
+  --header-promo-vip-text: #f5c842;
+  --header-badge-new-bg: #ff6b35;
+  --header-badge-batch-bg: #7c5cff;
   --hero-bg:
     radial-gradient(circle at 70% 20%, rgba(124, 92, 255, 0.25), transparent 40%),
     linear-gradient(135deg, #090b14, #111827, #151a2e);
@@ -33,6 +40,14 @@
   --text-inverse: #ffffff;
 
   --home-brand-bg: #111827;
+
+  --toolbox-bg: #090b14;
+  --toolbox-sidebar-active-bg: rgba(124, 92, 255, 0.14);
+  --toolbox-example-bg: rgba(124, 92, 255, 0.08);
+  --toolbox-example-border: rgba(124, 92, 255, 0.16);
+
+  --model-ref-bg: rgba(124, 92, 255, 0.08);
+  --model-ref-border: rgba(124, 92, 255, 0.16);
 
   // Legacy aliases
   --brand-color: var(--primary);

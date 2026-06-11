@@ -7,7 +7,9 @@ export function WorkspaceLayout() {
   return (
     <div className="app-shell workspace-shell">
       <AppHeader />
-      <Outlet />
+      <main className="workspace-shell__main">
+        <Outlet />
+      </main>
       <LoginModal />
     </div>
   )

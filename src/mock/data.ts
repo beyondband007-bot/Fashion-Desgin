@@ -185,6 +185,36 @@ export const mockTasks: TaskRecord[] = [
     credits: 96,
     thumbnail: image('task-3'),
   },
+  {
+    id: 'task-4',
+    title: '连衣裙真人图替换',
+    type: '真人图',
+    status: 'success',
+    createdAt: dayjs().subtract(6, 'hour').toISOString(),
+    progress: 100,
+    credits: 40,
+    thumbnail: image('task-4'),
+  },
+  {
+    id: 'task-5',
+    title: '智能抠图批量处理',
+    type: '编辑',
+    status: 'failed',
+    createdAt: dayjs().subtract(1, 'day').toISOString(),
+    progress: 0,
+    credits: 20,
+    thumbnail: image('task-5'),
+  },
+  {
+    id: 'task-6',
+    title: '春季上新创意图组',
+    type: '创意生图',
+    status: 'running',
+    createdAt: dayjs().subtract(20, 'minute').toISOString(),
+    progress: 45,
+    credits: 60,
+    thumbnail: image('task-6'),
+  },
 ]
 
 export const mockProjects: ProjectItem[] = [
@@ -310,3 +340,37 @@ export const mockPlans: PricingPlan[] = [
     features: ['API 对接', '私有化部署', '品牌模型训练', '专属成功团队'],
   },
 ]
+
+export const mockCreativeTemplates = [
+  { id: 'tpl-1', name: '多角度展示', category: '环绕展示', cover: image('creative-1'), tag: '热门' },
+  { id: 'tpl-2', name: '细节特写', category: '细节展示', cover: image('creative-2') },
+  { id: 'tpl-3', name: '搭配组合', category: '搭配组合', cover: image('creative-3'), tag: 'NEW' },
+  { id: 'tpl-4', name: '品牌大片', category: '品牌调性', cover: image('creative-4') },
+  { id: 'tpl-5', name: '社媒海报', category: '社媒传播', cover: image('creative-5') },
+  { id: 'tpl-6', name: '直播封面', category: '直播素材', cover: image('creative-6') },
+]
+
+export const mockDeliverySteps = [
+  { step: '01', title: '提交需求', desc: '填写需求说明并上传参考素材' },
+  { step: '02', title: '团队评估', desc: '专业团队评估方案与交付周期' },
+  { step: '03', title: '确认方案', desc: '确认风格、数量与报价后启动制作' },
+  { step: '04', title: '制作交付', desc: '48 小时内交付高清商用成片' },
+]
+
+export const mockDeliveryCases = [
+  { id: 'dc-1', title: '品牌 Lookbook', before: image('delivery-before-1'), after: image('delivery-after-1') },
+  { id: 'dc-2', title: '电商主图组', before: image('delivery-before-2'), after: image('delivery-after-2') },
+  { id: 'dc-3', title: '直播视觉包', before: image('delivery-before-3'), after: image('delivery-after-3') },
+]
+
+export const mockEnterprisePartners = ['千牛', '1688', '抖店', '京东', 'Shopify', 'Temu']
+
+export const mockAssetFolders = ['全部素材', 'Logo', '参考图', '模特', '场景', '品牌包']
+
+export const mockCurrentPlan = {
+  name: '高级会员',
+  expiresAt: dayjs().add(18, 'day').toISOString(),
+  credits: 1280,
+  concurrency: 4,
+  billingCycle: 'monthly' as const,
+}

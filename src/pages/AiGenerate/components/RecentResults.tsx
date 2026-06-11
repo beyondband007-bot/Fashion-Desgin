@@ -1,5 +1,4 @@
-import dayjs from 'dayjs'
-import { IconDownload, IconEye, IconRefresh } from '@arco-design/web-react/icon'
+import { IconClockCircle } from '@arco-design/web-react/icon'
 
 import type { RecentResult } from '@/types/generate'
 
@@ -16,9 +15,15 @@ export function RecentResults({ items, activeId, onSelect }: RecentResultsProps)
 
   return (
     <section className={styles.recentSection}>
-      <h4 className={styles.recentTitle}>最近生成</h4>
-      <div className={styles.recentList}>
-        {items.map((item) => (
+      <div className={styles.recentHead}>
+        <h4 className={styles.recentTitle}>
+          <IconClockCircle />
+          最近生成
+        </h4>
+        <span className={styles.recentMore}>查看全部 ›</span>
+      </div>
+      <div className={styles.recentGrid}>
+        {items.slice(0, 4).map((item) => (
           <button
             key={item.id}
             type="button"
@@ -26,15 +31,7 @@ export function RecentResults({ items, activeId, onSelect }: RecentResultsProps)
             onClick={() => onSelect(item)}
           >
             <img src={item.image} alt={item.type} />
-            <div className={styles.recentOverlay}>
-              <span className={styles.recentStatus}>{statusLabel(item.status)}</span>
-              <span className={styles.recentTime}>{dayjs(item.createdAt).format('HH:mm')}</span>
-              <div className={styles.recentActions}>
-                <IconEye />
-                <IconDownload />
-                <IconRefresh />
-              </div>
-            </div>
+            <span className={styles.recentBadge}>{statusLabel(item.status)}</span>
           </button>
         ))}
       </div>
@@ -43,6 +40,6 @@ export function RecentResults({ items, activeId, onSelect }: RecentResultsProps)
 }
 
 function statusLabel(status: RecentResult['status']) {
-  const map = { completed: '已完成', processing: '生成中', failed: '失败' }
+  const map = { completed: '3:4', processing: '生成中', failed: '失败' }
   return map[status]
 }

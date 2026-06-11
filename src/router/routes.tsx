@@ -64,6 +64,7 @@ export const routes: RouteObject[] = [
     element: <WorkspaceLayout />,
     children: [
       { path: 'ai-generate', element: <Navigate replace to="/ai-generate/clothes" /> },
+      { path: 'ai-generate/same-style', element: <AiGeneratePage /> },
       { path: 'ai-generate/clothes', element: <AiGeneratePage /> },
       { path: 'ai-generate/real', element: <AiGeneratePage /> },
       { path: 'ai-generate/mannequin', element: <AiGeneratePage /> },

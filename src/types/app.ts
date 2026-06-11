@@ -4,11 +4,17 @@ export type ThemeMode = 'light' | 'dark' | 'system'
 
 export type ResolvedTheme = 'light' | 'dark'
 
+export type NavBadgeVariant = 'new' | 'batch'
+
 export type NavItem = {
   key: string
   label: string
   path: string
   requiresAuth?: boolean
+  badge?: {
+    text: string
+    variant: NavBadgeVariant
+  }
 }
 
 export type StatCardItem = {

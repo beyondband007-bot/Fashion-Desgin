@@ -1,0 +1,58 @@
+// 配置栏内卡片模块（换模特等场景使用）
+
+.configCard {
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.configCardTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.configCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.requiredTag {
+  margin-left: 4px;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.collapseHead {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+}
+
+.collapseArrow {
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+.collapseBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

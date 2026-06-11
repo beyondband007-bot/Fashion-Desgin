@@ -1,5 +1,5 @@
-import { Button } from '@arco-design/web-react'
-import { IconCheck } from '@arco-design/web-react/icon'
+import { Select } from '@arco-design/web-react'
+import { useState } from 'react'
 
 import type { WorkbenchScene } from '@/types/generate'
 
@@ -13,43 +13,48 @@ type SceneStepProps = {
 }
 
 export function SceneStep({ scenes, selectedId, onSelect, onOpenDrawer }: SceneStepProps) {
-  const recommended = scenes.slice(0, 6)
+  const [genMode, setGenMode] = useState<'standard' | 'hq'>('standard')
 
   return (
-    <section className={styles.stepCard}>
-      <div className={styles.stepHead}>
-        <h3 className={styles.stepTitle}>3. 选择商拍场景</h3>
-        <p className={styles.stepDesc}>选择场景后右侧预览背景将同步变化</p>
-      </div>
+    <>
+      <section className={styles.configSection}>
+        <div className={styles.configSectionTitle}>背景</div>
+        <Select
+          placeholder="背景（非必选）"
+          value={selectedId ?? ''}
+          onChange={(value) => value && onSelect(value)}
+          className={styles.configSelect ?? ''}
+        >
+          {scenes.map((scene) => (
+            <Select.Option key={scene.id} value={scene.id}>
+              {scene.name}
+            </Select.Option>
+          ))}
+        </Select>
+        <button type="button" className={styles.configSectionLink} onClick={onOpenDrawer}>
+          更多场景 ›
+        </button>
+      </section>
 
-      <div className={styles.sceneScroll}>
-        {recommended.map((scene) => {
-          const active = selectedId === scene.id
-          return (
-            <button
-              key={scene.id}
-              type="button"
-              className={`${styles.sceneCard}${active ? ` ${styles.sceneCardActive}` : ''}`}
-              onClick={() => onSelect(scene.id)}
-            >
-              <img src={scene.image} alt={scene.name} />
-              <div className={styles.sceneOverlay}>
-                <strong>{scene.name}</strong>
-                <span>{scene.tone}</span>
-              </div>
-              {active ? (
-                <span className={styles.sceneCheck}>
-                  <IconCheck />
-                </span>
-              ) : null}
-            </button>
-          )
-        })}
-      </div>
-
-      <Button type="outline" long className={styles.stepMoreBtn ?? ''} onClick={onOpenDrawer}>
-        更多场景
-      </Button>
-    </section>
+      <section className={styles.configSection}>
+        <div className={styles.configSectionTitle}>生成模式</div>
+        <div className={styles.toggleGroup}>
+          <button
+            type="button"
+            className={`${styles.toggleBtn}${genMode === 'standard' ? ` ${styles.toggleBtnActive}` : ''}`}
+            onClick={() => setGenMode('standard')}
+          >
+            标准模式
+          </button>
+          <button
+            type="button"
+            className={`${styles.toggleBtn}${genMode === 'hq' ? ` ${styles.toggleBtnActive}` : ''}`}
+            onClick={() => setGenMode('hq')}
+          >
+            高品质模式
+          </button>
+        </div>
+      </section>
+    </>
   )
 }

@@ -1,0 +1,120 @@
+.page {
+  min-height: calc(100vh - var(--header-height));
+  display: grid;
+  place-items: center;
+  padding: 40px 24px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0, 122, 255, 0.08), transparent 30%),
+    var(--bg-primary);
+}
+
+.shell {
+  width: min(960px, 100%);
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+.promo {
+  padding: 40px 36px;
+  background: linear-gradient(160deg, #111827, #1f2937);
+  color: #fff;
+
+  h1 {
+    margin: 0 0 12px;
+    font-size: 30px;
+    line-height: 1.2;
+  }
+
+  p {
+    margin: 0 0 24px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.76);
+  }
+}
+
+.promoList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  div {
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 13px;
+  }
+}
+
+.formPanel {
+  padding: 36px 32px;
+}
+
+.formTitle {
+  margin: 0 0 8px;
+  font-size: 24px;
+  color: var(--text-primary);
+}
+
+.formDesc {
+  margin: 0 0 24px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.wechatBox {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--bg-tertiary);
+  text-align: center;
+
+  div {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 10px;
+    border-radius: 12px;
+    background: repeating-linear-gradient(
+      45deg,
+      var(--border-color),
+      var(--border-color) 8px,
+      var(--bg-secondary) 8px,
+      var(--bg-secondary) 16px
+    );
+  }
+
+  span {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+}
+
+.footerLinks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-size: 13px;
+
+  button {
+    border: none;
+    background: none;
+    color: var(--primary);
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 768px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .promo {
+    display: none;
+  }
+}

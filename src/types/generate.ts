@@ -40,7 +40,7 @@ export type RecentResult = {
   status: 'completed' | 'processing' | 'failed'
 }
 
-export type OutputRatio = '1:1' | '3:4' | '4:3' | '9:16' | '16:9'
+export type OutputRatio = '1:1' | '3:4' | '4:5' | '9:16' | '16:9'
 export type OutputPose = 'stand' | 'sit' | 'walk' | 'closeup'
 export type OutputQuality = 'standard' | 'hd' | 'uhd'
 export type OutputCount = 1 | 2 | 4
@@ -62,7 +62,7 @@ export type UploadedFile = {
   progress: number
 }
 
-export type GenerateMode = 'clothes' | 'real' | 'mannequin' | 'model'
+export type GenerateMode = 'same-style' | 'clothes' | 'real' | 'mannequin' | 'model'
 
 export type MockCreditInfo = {
   balance: number
